@@ -1,0 +1,120 @@
+﻿@model TvShowVM
+
+<div class="filter-bar">
+    <select id="genre-select">
+        <option value="">النوع</option>
+        @foreach (var item in ViewBag.MyBag3)
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    </select>
+    @if (!Model.FromHome)
+    {
+        <select id="country-select">
+            <option value="">البلد</option>
+            @foreach (var item in ViewBag.MyBag4)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <select id="language-select">
+            <option value="0">اللغة</option>
+            @foreach (var item in ViewBag.MyBag5)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+    }
+    <select id="year-select">
+        <option value="">السنة</option>
+        @foreach (var item in ViewBag.MyBag6)
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    </select>
+</div>
+
+<div class="i-grid" id="tvshow-list">
+    @foreach (var tvshow in Model.TvShows)
+    {
+        <div class="i-item">
+            <a asp-controller="TvShows" asp-action="Details" asp-route-id="@tvshow.Id">
+                <img src="@tvshow.imageSrc" alt="@tvshow.Name" class="i-image" />
+                <hr />
+                <div class="i-details">
+                    <p class="i-name">مسلسل @tvshow.Name</p>
+                    <p class="i-year">@tvshow.Year</p>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<button id="show-more" class="centered-button" data-current-page="1" data-total-pages="@Model.TotalPages">عرض المزيد</button>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function loadFilms(page, append) {
+            var genre = $('#genre-select').val();
+            var country = $('#country-select').val();
+            var language = parseInt($('#language-select').val());
+            var year = $('#year-select').val();
+            var myBoolProp1 = @Model.FromHome.ToString().ToLower();
+            var myBoolProp2 = @Model.Arabic.ToString().ToLower();
+            var myBoolProp3 = @Model.Ramadan.ToString().ToLower();
+
+            $.ajax({
+                url: '@Url.Action("LoadMoreTvShows")',
+                type: 'GET',
+                data: {
+                    page: page,
+                    genre: genre,
+                    country: country,
+                    language: language,
+                    year: year,
+                    fromHome: myBoolProp1,
+                    isArabic: myBoolProp2,
+                    isCartoon: myBoolProp3
+
+                },
+                success: function (response) {
+                    if (append) {
+                        $('#tvshow-list').append(response);
+                    } else {
+                        $('#tvshow-list').html(response);
+                    }
+
+                    var button = $('#show-more');
+                    button.attr('data-current-page', page);
+
+                    var totalPages = parseInt(button.attr('data-total-pages'));
+                    if (page >= totalPages) {
+                        button.hide();
+                    } else {
+                        button.show();
+                    }
+
+                    if ($('#tvshow-list').children().length % 9 !== 0) {
+                        button.hide();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX request failed:", textStatus, errorThrown);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#show-more').on('click', function () {
+                var button = $(this);
+                var currentPage = parseInt(button.attr('data-current-page'));
+                loadFilms(currentPage + 1, true);
+            });
+
+            $('#genre-select, #country-select, #language-select, #year-select').on('change', function () {
+                loadFilms(1, false);
+            });
+        });
+    </script>
+}

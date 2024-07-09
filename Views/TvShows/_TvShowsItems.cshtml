@@ -1,0 +1,15 @@
+﻿@model TvShowVM
+
+@foreach (var tvshow in Model.TvShows)
+{
+    <div class="i-item">
+        <a asp-controller="TvShows" asp-action="Details" asp-route-id="@tvshow.Id">
+            <img src="@tvshow.imageSrc" alt="@tvshow.Name" class="i-image" />
+            <hr />
+            <div class="i-details">
+                <p class="i-name">مسلسل @tvshow.Name</p>
+                <p class="i-year">@tvshow.Year</p>
+            </div>
+        </a>
+    </div>
+}

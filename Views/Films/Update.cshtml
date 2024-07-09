@@ -1,0 +1,126 @@
+﻿@model FilmViewModel
+@{
+    ViewData["Title"] = "Update Film";
+}
+@{
+    var data1 = ViewBag.MyBag1 as SelectList;
+    var modified1 = new SelectList(data1.Items, data1.DataValueField, data1.DataTextField);
+    modified1 = new SelectList(modified1.Prepend(new SelectListItem("اختر مخرج", "")), "Value", "Text");
+}
+@{
+    var data2 = ViewBag.MyBag3 as SelectList;
+    var modified2 = new SelectList(data2.Items, data2.DataValueField, data2.DataTextField);
+    modified2 = new SelectList(modified2.Prepend(new SelectListItem("اختر نوع", "")), "Value", "Text");
+}
+@{
+    var data3 = ViewBag.MyBag4 as SelectList;
+    var modified3 = new SelectList(data3.Items, data3.DataValueField, data3.DataTextField);
+    modified3 = new SelectList(modified3.Prepend(new SelectListItem("اختر بلد", "")), "Value", "Text");
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">تعديل فيلم</h2>
+            <hr />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="IsSeries"></label>
+            <input asp-for="IsSeries" class="form-check-input" />
+            <span asp-validation-for="IsSeries" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="PartsNo"></label>
+            <input asp-for="PartsNo" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Part"></label>
+            <input asp-for="Part" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Root"></label>
+            <input asp-for="Root" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="NoOfLikes"></label>
+            <input asp-for="NoOfLikes" class="form-control" />
+            <span asp-validation-for="NoOfLikes" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="NoOfDisLikes"></label>
+            <input asp-for="NoOfDisLikes" class="form-control" />
+            <span asp-validation-for="NoOfDisLikes" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Year"></label>
+            <input asp-for="Year" class="form-control" />
+            <span asp-validation-for="Year" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Month"></label>
+            <input asp-for="Month" class="form-control" />
+            <span asp-validation-for="Month" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Type"></label>
+            <select asp-for="Type" class="form-select" asp-items="Html.GetEnumSelectList<ItemType>()"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Language"></label>
+            <select asp-for="Language" class="form-select" asp-items="Html.GetEnumSelectList<Languages>()"></select>
+            <span asp-validation-for="Language" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ProducerId"></label>
+            <select asp-for="ProducerId" class="form-select" asp-items="modified1"></select>
+            <span asp-validation-for="ProducerId"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="CategoryId"></label>
+            <select asp-for="CategoryId" class="form-select" asp-items="modified2"></select>
+            <span asp-validation-for="CategoryId"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="CountryId"></label>
+            <select asp-for="CountryId" class="form-select" asp-items="modified3"></select>
+            <span asp-validation-for="CountryId"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ActorsId"></label>
+            <select asp-for="ActorsId" class="tall-select form-select" asp-items="@ViewBag.MyBag2" multiple></select>
+            <span asp-validation-for="ActorsId"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="clientFile"></label>
+            <div class="file-input-container mb-3">
+                <input type="file" asp-for="clientFile" id="fileInput" />
+                <label for="fileInput">اختر ملف</label>
+                <span class="file-name">لم يتم اختيار ملف</span>
+            </div>
+            <span asp-validation-for="clientFile" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+        <a asp-action="Index" asp-controller="Films" class="btn btn-secondary">
+            العوده الي قائمة الأفلام
+        </a>
+    </div>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script>
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+        const fileName = event.target.files[0] ? event.target.files[0].name : 'لم يتم اختيار ملف';
+        document.querySelector('.file-name').textContent = fileName;
+    });
+</script> 

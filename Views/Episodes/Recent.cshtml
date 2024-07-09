@@ -1,0 +1,68 @@
+﻿@model EpisodeVM
+
+<div class="i-grid" id="episode-list">
+    @foreach (var item in Model.Episodes)
+    {
+        <div class="i-item">
+            <a href="#">
+                <img src="@item.Part.imageSrc" alt="@item.Part.Name" class="i-image" />
+                <hr />
+                <div class="i-details">
+                    <p class="card-title">@item.Part.Name</p>
+                    <p class="i-year">حلقة @item.EpisodeNo | @item.Date</p>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<button id="show-more" class="centered-button" data-current-page="1" data-total-pages="@Model.TotalPages">عرض المزيد</button>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function loadEpisodes(page, append) {
+
+            $.ajax({
+                url: '@Url.Action("LoadMoreEpisodes")',
+                type: 'GET',
+                data: {
+                    page: page
+                },
+                success: function (response) {
+                    if (append) {
+                        $('#episode-list').append(response);
+                    } else {
+                        $('#episode-list').html(response);
+                    }
+
+                    var button = $('#show-more');
+                    button.attr('data-current-page', page);
+
+                    var totalPages = parseInt(button.attr('data-total-pages'));
+                    if (page >= totalPages) {
+                        button.hide();
+                    } else {
+                        button.show();
+                    }
+
+                    if ($('#episode-list').children().length % 9 !== 0) {
+                        button.hide();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX request failed:", textStatus, errorThrown);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#show-more').on('click', function () {
+                var button = $(this);
+                var currentPage = parseInt(button.attr('data-current-page'));
+                loadEpisodes(currentPage + 1, true);
+            });
+
+        });
+    </script>
+}

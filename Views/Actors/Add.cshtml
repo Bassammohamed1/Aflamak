@@ -1,0 +1,44 @@
+﻿@model Actor
+@{
+    ViewData["Title"] = "Add Actor";
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">إضافة ممثل</h2>
+            <hr />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="AnotherLangName"></label>
+            <input asp-for="AnotherLangName" class="form-control" />
+            <span asp-validation-for="AnotherLangName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="clientFile"></label>
+            <div class="file-input-container mb-3">
+                <input type="file" asp-for="clientFile" id="fileInput" />
+                <label for="fileInput">اختر ملف</label>
+                <span class="file-name">لم يتم اختيار ملف</span>
+            </div>
+            <span asp-validation-for="clientFile" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+        <a asp-action="Index" asp-controller="Actors" class="btn btn-secondary">
+            العوده الي قائمة الممثلين
+        </a>
+    </div>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script>
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+        const fileName = event.target.files[0] ? event.target.files[0].name : 'لم يتم اختيار ملف';
+        document.querySelector('.file-name').textContent = fileName;
+    });
+</script>

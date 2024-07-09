@@ -1,0 +1,135 @@
+﻿@model WorksVM
+
+<div class="filter-bar">
+    <select id="genre-select">
+        <option value="">النوع</option>
+        @foreach (var item in ViewBag.MyBag3)
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    </select>
+    <select id="country-select">
+        <option value="">البلد</option>
+        @foreach (var item in ViewBag.MyBag4)
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    </select>
+    <select id="language-select">
+        <option value="0">اللغة</option>
+        @foreach (var item in ViewBag.MyBag5)
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    </select>
+    @if (!Model.FromHome)
+    {
+        <select id="type-select">
+            <option value="">نوع العمل</option>
+            @foreach (var item in ViewBag.MyBag6)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+    }
+</div>
+
+<div class="i-grid" id="items-list">
+    @foreach (var item in Model.Items)
+    {
+        if (item.Type == "Film")
+        {
+            <div class="i-item">
+                <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Item.Id">
+                    <img src="@item.Item.imageSrc" alt="@item.Item.Name" class="i-image" />
+                    <hr />
+                    <div class="i-details">
+                        <p class="i-name">فيلم @item.Item.Name</p>
+                        <p class="i-year">@item.Item.Year</p>
+                    </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="i-item">
+                <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Item.Id">
+                    <img src="@item.Item.imageSrc" alt="@item.Item.Name" class="i-image" />
+                    <hr />
+                    <div class="i-details">
+                        <p class="i-name">مسلسل @item.Item.Name</p>
+                        <p class="i-year">@item.Item.Year</p>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+</div>
+
+<button id="show-more" class="centered-button" data-current-page="1" data-total-pages="@Model.TotalPages">عرض المزيد</button>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function loadItems(page, append) {
+            var genre = $('#genre-select').val();
+            var country = $('#country-select').val();
+            var language = parseInt($('#language-select').val());
+            var type = $('#type-select').val();
+            var myBoolProp1 = @Model.FromHome.ToString().ToLower();
+            var myBoolProp2 = @Model.Film.ToString().ToLower();
+            var myBoolProp3 = @Model.TvShow.ToString().ToLower();
+
+            $.ajax({
+                url: '@Url.Action("LoadMoreTopRated")',
+                type: 'GET',
+                data: {
+                    page: page,
+                    genre: genre,
+                    country: country,
+                    language: language,
+                    type: type,
+                    fromHome: myBoolProp1,
+                    isFilms: myBoolProp2,
+                    isTvShows: myBoolProp3
+                },
+                success: function (response) {
+                    if (append) {
+                        $('#items-list').append(response);
+                    } else {
+                        $('#items-list').html(response);
+                    }
+
+                    var button = $('#show-more');
+                    button.attr('data-current-page', page);
+
+                    var totalPages = parseInt(button.attr('data-total-pages'));
+                    if (page >= totalPages) {
+                        button.hide();
+                    } else {
+                        button.show();
+                    }
+
+                    if ($('#items-list').children().length % 9 !== 0) {
+                        button.hide();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX request failed:", textStatus, errorThrown);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#show-more').on('click', function () {
+                var button = $(this);
+                var currentPage = parseInt(button.attr('data-current-page'));
+                loadItems(currentPage + 1, true);
+            });
+
+            $('#genre-select, #country-select, #language-select, #type-select').on('change', function () {
+                loadItems(1, false);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,167 @@
+﻿@model IPagedList<TvShow>
+@{
+    ViewData["Title"] = "TvShows";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h2 class="text-primary mb-0">المسلسلات</h2>
+        </div>
+
+        <div>
+            <a asp-controller="Tvshows" asp-action="Add" class="btn btn-primary">
+                إضافة  <i class="bi bi-plus-circle"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="dropdown my-4">
+            <a class="nav-link dropdown-toggle text-dark" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                ترتيب حسب <i class="bi bi-sliders2"></i>
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item sort-option" href="#" data-sort-likes="true">عدد الأعجابات <i class="bi bi-star"></i></a>
+                <a class="dropdown-item sort-option" href="#" data-sort-date="true">السنة <i class="bi bi-calendar"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">
+                   الصورة
+                </th>
+                <th scope="col">
+                    الأسم
+                </th>
+                <th scope="col">
+                  عدد الأجزاء
+                </th>
+                <th scope="col">
+                    رمضاني 
+                </th>
+                <th scope="col">
+                  عدد الأعجابات
+                </th>
+                <th scope="col">
+                    السنة
+                </th>
+                <th scope="col">
+                    الشهر
+                </th>
+                <th scope="col">
+                  مسلسل
+                </th>
+                <th scope="col">
+                  اللغة
+                </th>
+                <th scope="col">
+                   المخرج
+                </th>
+                <th scope="col">
+                  النوع 
+                </th>
+                <th scope="col">
+                 البلد
+                </th>
+                <th scope="col">
+                    الخيارات
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row">
+                        <img src="@item.imageSrc" alt="@item.Name" class="Photos" />
+                    </td>
+                    <td width="10%">
+                        @item.Name
+                    </td>
+                    <td scope="row">
+                        @item.PartsNo
+                    </td>
+                    <td scope="row">
+                        @item.IsRamadan
+                    </td>
+                    <td scope="row">
+                        @item.NoOfLikes
+                    </td>
+                    <td scope="row">
+                        @item.Year
+                    </td>
+                    <td scope="row">
+                        @item.Month
+                    </td>
+                    <td scope="row">
+                        @item.Type
+                    </td>
+                    <td scope="row">
+                        @item.Language
+                    </td>
+                    <td width="10%">
+                        @item.Producer.Name
+                    </td>
+                    <td scope="row">
+                        @item.Category.Name
+                    </td>
+                    <td scope="row">
+                        @item.Country.Name
+                    </td>
+                    <td scope="row">
+                        <a asp-controller="TvShows" asp-action="Update" asp-route-Id="@item.Id" class="btn btn-sm btn-success">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-controller="TvShows" asp-action="Delete" asp-route-Id="@item.Id" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortLikes = ViewBag.SortLikes, sortDate = ViewBag.SortDate }), new PagedListRenderOptions
+{
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+    DisplayLinkToIndividualPages = true,
+    LinkToFirstPageFormat = "First",
+    LinkToPreviousPageFormat = "Previous",
+    LinkToIndividualPageFormat = "{0}",
+    LinkToNextPageFormat = "Next",
+    LinkToLastPageFormat = "Last"
+})
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.sort-option').click(function (e) {
+                e.preventDefault();
+                var sortLikes = $(this).data('sort-likes');
+                var sortDate = $(this).data('sort-date');
+
+                var url = '@Url.Action("Index", "TvShows")';
+                url += '?page=1'; 
+                if (sortLikes) {
+                    url += '&sortLikes=true';
+                    url += '&sortDate=false';
+                } else if (sortDate) {
+                    url += '&sortLikes=false';
+                    url += '&sortDate=true';
+                }
+                window.location.href = url;
+            });
+        });
+    </script>
+}

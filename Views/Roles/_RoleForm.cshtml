@@ -1,0 +1,10 @@
+﻿@model RoleFormVM
+<form method="post" asp-action="Add">
+    <div class="input-group mb-3">
+        <input asp-for="Name" class="form-control" placeholder="اسم الدور..." />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">إضافة دور جديد <i class="bi bi-plus-circle"></i></button>
+        </div>
+    </div>
+    <span asp-validation-for="Name" class="text-danger"></span>
+</form>

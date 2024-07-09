@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] Aflamak</title>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Aflamak.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.xyz/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a asp-controller="Home" asp-action="Index"> <h1><span>أفلامك</span></h1></a>
+        </div>
+        <form class="search-bar" asp-controller="Home" asp-action="Filter">
+            <input name="searchString" type="text" placeholder="ادخل كلمة للبحث" aria-label="Recipient's username" aria-describedby="button-addon2">
+            <button type="submit">بحث</button>
+        </form>
+    </header>
+    <nav>
+        <ul class="left-nav">
+            <li><a asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i> أفلامك</a></li>
+            <li><a asp-controller="Home" asp-action="TopRated"><i class="bi bi-graph-up"></i> الأكثر مشاهدة</a></li>
+            <li><a asp-controller="Home" asp-action="Recent"><i class="bi bi-hourglass-split"></i> الأحدث</a></li>
+            <li><a asp-controller="Films" asp-action="FilmsList"><i class="bi bi-film"></i> الأفلام</a></li>
+            <li><a asp-controller="TvShows" asp-action="TvShowsList"><i class="bi bi-camera-reels"></i> المسلسلات</a></li>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="bi bi-gear"></i> الأدارة
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-controller="Producers" asp-action="Index">المخرجين <i class="bi bi-headset"></i></a>
+                        <a class="dropdown-item" asp-controller="Actors" asp-action="Index">الممثلين <i class="bi bi-person-square"></i></a>
+                        <a class="dropdown-item" asp-controller="Films" asp-action="Index">الأفلام <i class="bi bi-film"></i></a>
+                        <a class="dropdown-item" asp-controller="TvShows" asp-action="Index">المسلسلات <i class="bi bi-camera-reels"></i></a>
+                        <a class="dropdown-item" asp-controller="Categories" asp-action="Index">الانواع <i class="bi bi-list-ul"></i></a>
+                        <a class="dropdown-item" asp-controller="Countries" asp-action="Index">البلاد <i class="bi bi-globe"></i></a>
+                        <a class="dropdown-item" asp-controller="Parts" asp-action="Index">الأجزاء <i class="bi bi-list"></i></a>
+                        <a class="dropdown-item" asp-controller="Episodes" asp-action="Index">الحلقات <i class="bi bi-camera-video"></i></a>
+                        <a class="dropdown-item" asp-controller="Roles" asp-action="Index">الأدوار <i class="bi bi-card-text"></i></a>
+                        <a class="dropdown-item" asp-controller="Users" asp-action="Index">المستخدمين <i class="bi bi-people-fill"></i></a>
+                    </div>
+                </li>
+            }
+
+            <li>
+                <partial name="_LoginPartial" />
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="border-top footer">
+        <div class="container">
+            &copy; 2024 - Aflamak - Bassam Mohamed
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

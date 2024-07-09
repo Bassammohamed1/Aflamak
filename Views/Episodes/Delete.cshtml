@@ -1,0 +1,15 @@
+﻿@model Episode
+@{
+    ViewData["Title"] = "Delete Episode";
+}
+<form method="post">
+    <div class="window" style="padding:20px;">
+        <p3>هل انت متأكد من أنك تريد حذف هذه الحلقة؟؟</p3>
+        <div class="buttons" style="padding-top:10px;">
+            <button type="submit" class="btn btn-primary">موافق</button>
+            <a asp-controller="Episodes" asp-action="Index" class="btn btn-secondary">
+                العوده الي قائمة الحلقات
+            </a>
+        </div>
+    </div>
+</form>

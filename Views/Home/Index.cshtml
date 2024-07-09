@@ -1,0 +1,266 @@
+﻿@model HomePageVM
+@{
+    ViewData["Title"] = "Home Page";
+}
+<main>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <section class="welcome">
+        <h2>مرحباً بكم في موقع أفلامك</h2>
+    </section>
+
+    <!--  الاكثر مشاهدة الافلام -->
+    <section class="series">
+        <div class="series-header">
+            <h3> الأفلام الأكثر مشاهدة</h3>
+            <a asp-controller="Home" asp-action="TopRated" asp-route-isFilms="@true" class="more-link">المزيد</a>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.MostWatchedFilms)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">فيلم @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--المسلسلات الأكثر مشاهدة-->
+    <section class="series">
+        <div class="series-header">
+            <h3> المسلسلات الأكثر مشاهدة</h3>
+            <a asp-controller="Home" asp-action="TopRated" asp-route-isTvShows="@true" class="more-link">المزيد</a>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.MostWatchedTvShows)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">مسلسل @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--  أحدث الأضافات -->
+    <section class="series">
+        <div class="series-header">
+            <h3>أحدث الأضافات</h3>
+            <a asp-controller="Episodes" asp-action="Recent" class="more-link">المزيد</a>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.RecentEpisodes)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="Episodes" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.Part.imageSrc" alt="@item.Part.Name">
+                            <hr />
+                            <p class="card-title">@item.Part.Name</p>
+                            <p class="card-year">حلقة @item.EpisodeNo</p>
+                            <p class="card-year">@item.Date</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--   احدث الافلام  -->
+    <section class="series">
+        <div class="series-header">
+            <h3>أحدث الافلام</h3>
+            <a asp-controller="Home" asp-action="Recent" asp-route-isFilms="@true" class="more-link">المزيد</a>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.RecentFilms)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">فيلم @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--  احدث المسلسلات   -->
+    <section class="series">
+        <div class="series-header">
+            <h3>أحدث المسلسلات</h3>
+            <a asp-controller="Home" asp-action="Recent" asp-route-isTvShows="@true" class="more-link">المزيد</a>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.RecentTvShows)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">مسلسل @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--  افلام عربي   -->
+    <section class="series">
+        <div class="series-header">
+            <h3>افلام عربي</h3>
+            <a asp-controller="Films" asp-action="FilmsList" asp-route-isArabic="@true" class="more-link">المزيد</a>
+        </div>
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.ArabicFilms)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">فيلم @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!-- مسلسلات عربي  -->
+    <section class="series">
+        <div class="series-header">
+            <h3>مسلسلات عربي</h3>
+            <a asp-controller="TvShows" asp-action="TvShowsList" asp-route-isArabic="@true" class="more-link">المزيد</a>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.ArabicTvShows)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">مسلسل @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--  افلام كرتون   -->
+    <section class="series">
+        <div class="series-header">
+            <h3>افلام كرتون</h3>
+            <a asp-controller="Films" asp-action="FilmsList" asp-route-isCartoon="@true" class="more-link">المزيد</a>
+        </div>
+        <div class="swiper">
+            <div class="swiper-wrapper card-container">
+                @foreach (var item in Model.CartoonFilms)
+                {
+                    <div class="swiper-slide card">
+                        <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Id">
+                            <img src="@item.imageSrc" alt="@item.Name">
+                            <hr />
+                            <p class="card-title">فيلم @item.Name</p>
+                            <p class="card-year">@item.Year</p>
+                        </a>
+                    </div>
+                }
+            </div>
+            <!-- Add Arrows -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+    <!--  مسلسلات رمضان -->
+    @if (Model.RamadanTvShows is not null)
+    {
+        <section class="series">
+            <div class="series-header">
+                <h3>مسلسلات رمضان @Model.RamadanTvShows.First().Year</h3>
+                <a asp-controller="TvShows" asp-action="TvShowsList" asp-route-isRamadan="@true" class="more-link">المزيد</a>
+            </div>
+
+            <div class="swiper">
+                <div class="swiper-wrapper card-container">
+                    @foreach (var item in Model.RamadanTvShows)
+                    {
+                        <div class="swiper-slide card">
+                            <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Id">
+                                <img src="@item.imageSrc" alt="@item.Name">
+                                <hr />
+                                <p class="card-title">مسلسل @item.Name</p>
+                                <p class="card-year">@item.Year</p>
+                            </a>
+                        </div>
+                    }
+                </div>
+                <!-- Add Arrows -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+    }
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- Initialize Swiper with correct configuration -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var swiper = new Swiper('.swiper', {
+                slidesPerView: 5,
+                centeredSlides: false,
+                spaceBetween: 0,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+        });
+    </script>
+</main>

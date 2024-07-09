@@ -1,0 +1,136 @@
+﻿@model PartDetailsVM
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="Container">
+    <div class="Header">
+        <h1>مسلسل @Model.Part.Name</h1>
+    </div>
+    <div class="Content">
+        <div class="movie-details">
+            <table>
+                <tr>
+                    <th>التصنيف</th>
+                    <td>مسلسل</td>
+                </tr>
+                <tr>
+                    <th>سنة الاصدار</th>
+                    <td>@Model.Part.Date</td>
+                </tr>
+                <tr>
+                    <th>النوع</th>
+                    <td>@Model.Part.TvShow.Category.Name</td>
+                </tr>
+                <tr>
+                    <th>الدقة</th>
+                    <td>1080p</td>
+                </tr>
+                <tr>
+                    <th>البلد</th>
+                    <td>@Model.Part.TvShow.Country.Name</td>
+                </tr>
+                <tr>
+                    <th>اللغة</th>
+                    <td>
+                        @(Model.Part.TvShow.Language == 1 ? "عربي" :
+                            Model.Part.TvShow.Language == 2 ? "انجليزي" :
+                            Model.Part.TvShow.Language == 3 ? "فرنسي" :
+                            Model.Part.TvShow.Language == 4 ? "الماني" :
+                            Model.Part.TvShow.Language == 5 ? "اسباني" :
+                            "غير معروف")
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="movie-poster">
+            <img src="@Model.Part.imageSrc" alt="@Model.Part.TvShow.Name">
+            <a href="#">مشاهدة</a>
+        </div>
+    </div>
+
+    <div class="rating">
+        <h2 class="rating-header">تقييم المشاهدين</h2>
+    </div>
+
+    <div class="feedback">
+        <div class="card @(Model.HasUserLiked ? "Filled-button" : "unFilled-button")">
+            <a asp-action="LikePart" asp-route-partId="@Model.Part.Id">
+                <p class="card-header">@Model.Part.NoOfLikes</p>
+                <p class="card-footer"><i class="fa fa-thumbs-up"></i></p>
+            </a>
+        </div>
+        <div class="card @(Model.HasUserDisliked ? "Filled-button" : "unFilled-button")">
+            <a asp-action="DisLikePart" asp-route-partId="@Model.Part.Id">
+                <p class="card-header">@Model.Part.NoOfDisLikes</p>
+                <p class="card-footer"><i class="fa fa-thumbs-down"></i></p>
+            </a>
+        </div>
+    </div>
+
+    <div class="rating">
+        <h2 class="rating-header">القصة</h2>
+        <p class="content">@Model.Part.TvShow.Description</p>
+    </div>
+
+    <div class="related-movies">
+        <h2 class="rating-header">الحلقات</h2>
+        <div class="movie-list">
+            @foreach (var item in Model.Episodes)
+            {
+                <div class="movie-item">
+                    <a asp-controller="Episodes" asp-action="Details" asp-route-id="@item.Id">
+                        <img src="@item.Part.imageSrc" alt="@item.Part.Name">
+                        <hr />
+                        <p>الحلقة @item.EpisodeNo</p>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="related-movies">
+        <h2 class="rating-header">المواسم</h2>
+        <div class="movie-list">
+            @foreach (var item in Model.Parts)
+            {
+                <div class="movie-item">
+                    <a asp-controller="Parts" asp-action="Details" asp-route-id="@item.Id">
+                        <img src="@item.imageSrc" alt="@item.Name">
+                        <hr />
+                        <p>مسلسل @item.Name</p>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="producers">
+        <h2 class="rating-header">المنتجون</h2>
+        <div class="producer-list">
+            <div class="producer-item">
+                <a asp-controller="Producers" asp-action="Details" asp-route-id="@Model.Part.TvShow.ProducerId">
+                    <img src="@Model.Part.TvShow.Producer.imageSrc" alt="@Model.Part.TvShow.Producer.Name">
+                    <hr />
+                    <p>@Model.Part.TvShow.Producer.Name</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="actors">
+        <h2 class="rating-header">الممثلون</h2>
+        <div class="actor-list">
+            @foreach (var item in Model.Part.TvShow.ActorTvShows)
+            {
+                <div class="actor-item">
+                    <a asp-controller="Actors" asp-action="Details" asp-route-id="@item.ActorId">
+                        <img src="@item.Actor.imageSrc" alt="@item.Actor.Name">
+                        <hr />
+                        <p>@item.Actor.Name</p>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

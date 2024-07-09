@@ -1,0 +1,101 @@
+﻿@model IPagedList<Part>
+@{
+    ViewData["Title"] = "Parts";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h2 class="text-primary mb-0">الأجزاء</h2>
+        </div>
+
+        <div>
+            <a asp-controller="Parts" asp-action="Add" class="btn btn-primary">
+                إضافة  <i class="bi bi-plus-circle"></i>
+            </a>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">
+                    الصورة
+                </th>
+                <th scope="col">
+                    الأسم
+                </th>
+                <th scope="col">
+                    عدد الحلقات
+                </th>
+                <th scope="col">
+                    عدد الأعجابات
+                </th>
+                <th scope="col">
+                    السنة
+                </th>
+                <th scope="col">
+                    الشهر
+                </th>
+                <th width="12%">
+                    المسلسل
+                </th>
+                <th scope="col">
+                    الخيارات
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row">
+                        <img src="@item.imageSrc" alt="@item.TvShow.Name" class="Photos" />
+                    </td>
+                    <td scope="row">
+                        @item.Name
+                    </td>
+                    <td scope="row">
+                        @item.EpisodesNo
+                    </td>
+                    <td scope="row">
+                        @item.NoOfLikes
+                    </td>
+                    <td scope="row">
+                        @item.Date
+                    </td>
+                    <td scope="row">
+                        @item.Month
+                    </td>
+                    <td scope="row">
+                        @item.TvShow.Name
+                    </td>
+                    <td scope="row">
+                        <a asp-controller="Parts" asp-action="Update" asp-route-Id="@item.Id" class="btn btn-sm btn-success">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-controller="Parts" asp-action="Delete" asp-route-Id="@item.Id" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+{
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+    DisplayLinkToIndividualPages = true,
+    LinkToFirstPageFormat = "First",
+    LinkToPreviousPageFormat = "Previous",
+    LinkToIndividualPageFormat = "{0}",
+    LinkToNextPageFormat = "Next",
+    LinkToLastPageFormat = "Last"
+})
+</div>

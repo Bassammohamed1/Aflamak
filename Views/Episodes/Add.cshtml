@@ -1,0 +1,54 @@
+﻿@model Episode
+@{
+    ViewData["Title"] = "Add Episode";
+}
+@{
+    var data1 = ViewBag.MyBag1 as SelectList;
+    var modified1 = new SelectList(data1.Items, data1.DataValueField, data1.DataTextField);
+    modified1 = new SelectList(modified1.Prepend(new SelectListItem("اختر جزء", "")), "Value", "Text");
+}
+<form method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">إضافة حلقة</h2>
+            <hr />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="EpisodeNo"></label>
+            <input asp-for="EpisodeNo" class="form-control" />
+            <span asp-validation-for="EpisodeNo" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Date"></label>
+            <input asp-for="Date" class="form-control" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="NoOfLikes"></label>
+            <input asp-for="NoOfLikes" class="form-control" />
+            <span asp-validation-for="NoOfLikes" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="NoOfDisLikes"></label>
+            <input asp-for="NoOfDisLikes" class="form-control" />
+            <span asp-validation-for="NoOfDisLikes" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="PartId"></label>
+            <select asp-for="PartId" class="form-select" asp-items="modified1"></select>
+            <span asp-validation-for="PartId"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+        <a asp-action="Index" asp-controller="Episodes" class="btn btn-secondary">
+            العوده الي قائمة الحلقات
+        </a>
+    </div>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

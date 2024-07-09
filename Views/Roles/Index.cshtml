@@ -1,0 +1,32 @@
+﻿@model IEnumerable<IdentityRole>
+@{
+    ViewData["Title"] = "Roles";
+}
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">الأدوار</h2>
+        </div>
+        <partial name="_RoleForm" model="new RoleFormVM()" />
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">
+                    الأسم
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="table-light">
+                    <td scope="row">
+                        @item.Name
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

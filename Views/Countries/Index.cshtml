@@ -1,0 +1,65 @@
+﻿@model IPagedList<Country>
+@{
+    ViewData["Title"] = "Countries";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+            <h2 class="text-primary mb-0">البلاد</h2>
+        </div>
+
+        <div>
+            <a asp-controller="Countries" asp-action="Add" class="btn btn-primary">
+                إضافة  <i class="bi bi-plus-circle"></i>
+            </a>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">
+                    الأسم
+                </th>
+                <th scope="col">
+                    الخيارات
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td scope="row">
+                        @item.Name
+                    </td>
+                    <td scope="row">
+                        <a asp-controller="Countries" asp-action="Update" asp-route-Id="@item.Id" class="btn btn-sm btn-success">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-controller="Countries" asp-action="Delete" asp-route-Id="@item.Id" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+{
+    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+    DisplayLinkToIndividualPages = true,
+    LinkToFirstPageFormat = "First",
+    LinkToPreviousPageFormat = "Previous",
+    LinkToIndividualPageFormat = "{0}",
+    LinkToNextPageFormat = "Next",
+    LinkToLastPageFormat = "Last"
+})
+</div>

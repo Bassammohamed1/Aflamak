@@ -1,0 +1,41 @@
+﻿@model PersonDetailsVM<Actor>
+
+<div class="Container">
+    <div class="Header">
+        <h1>@Model.Person.Name</h1>
+    </div>
+    <div class="Content">
+        <div class="movie-poster">
+            <img src="@Model.Person.imageSrc" alt="@Model.Person.Name">
+        </div>
+    </div>
+
+    <div class="related-movies">
+        <h2 class="rating-header">الأعمال</h2>
+        <div class="movie-list">
+            @foreach (var item in Model.Works)
+            {
+                if (item.Type == "Film")
+                {
+                    <div class="movie-item">
+                        <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Item.Id">
+                            <img src="@item.Item.imageSrc" alt="@item.Item.Name">
+                            <hr />
+                            <p>فيلم @item.Item.Name</p>
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="movie-item">
+                        <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Item.Id">
+                            <img src="@item.Item.imageSrc" alt="@item.Item.Name">
+                            <hr />
+                            <p>مسلسل @item.Item.Name</p>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

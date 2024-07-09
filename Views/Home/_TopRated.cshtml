@@ -1,0 +1,31 @@
+﻿@model WorksVM
+
+@foreach (var item in Model.Items)
+{
+    if (item.Type == "Film")
+    {
+        <div class="i-item">
+            <a asp-controller="Films" asp-action="Details" asp-route-id="@item.Item.Id">
+                <img src="@item.Item.imageSrc" alt="@item.Item.Name" class="i-image" />
+                <hr />
+                <div class="i-details">
+                    <p class="i-name">فيلم @item.Item.Name</p>
+                    <p class="i-year">@item.Item.Year</p>
+                </div>
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="i-item">
+            <a asp-controller="TvShows" asp-action="Details" asp-route-id="@item.Item.Id">
+                <img src="@item.Item.imageSrc" alt="@item.Item.Name" class="i-image" />
+                <hr />
+                <div class="i-details">
+                    <p class="i-name">مسلسل @item.Item.Name</p>
+                    <p class="i-year">@item.Item.Year</p>
+                </div>
+            </a>
+        </div>
+    }
+}

@@ -1,0 +1,73 @@
+﻿@model SearchVM
+
+@if (Model.Producer is not null)
+{
+    <section class="series">
+        <div class="series-header">
+            <h3>المخرجين</h3>
+        </div>
+        <div class="card-container">
+            <div class="card">
+                <a asp-controller="Producers" asp-action="Details" asp-route-id="@Model.Producer.Id">
+                    <img src="@Model.Producer.imageSrc" alt="@Model.Producer.Name">
+                    <hr />
+                    <p class="card-title">@Model.Producer.Name</p>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+@if (Model.Actor is not null)
+{
+    <section class="series">
+        <div class="series-header">
+            <h3>الممثلين</h3>
+        </div>
+        <div class="card-container">
+            <div class="card">
+                <a asp-controller="Actors" asp-action="Details" asp-route-id="@Model.Actor.Id">
+                    <img src="@Model.Actor.imageSrc" alt="@Model.Actor.Name">
+                    <hr />
+                    <p class="card-title">@Model.Actor.Name</p>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+@if (Model.Film is not null)
+{
+    <section class="series">
+        <div class="series-header">
+            <h3>الأفلام</h3>
+        </div>
+        <div class="card-container">
+            <div class="card">
+                <a asp-controller="Films" asp-action="Details" asp-route-id="@Model.Film.Id">
+                    <img src="@Model.Film.imageSrc" alt="@Model.Film.Name">
+                    <hr />
+                    <p class="card-title">@Model.Film.Name</p>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+@if (Model.TvShow is not null)
+{
+    <section class="series">
+        <div class="series-header">
+            <h3>المسلسلات</h3>
+        </div>
+        <div class="card-container">
+            <div class="card">
+                <a asp-controller="TvShows" asp-action="Details" asp-route-id="@Model.TvShow.Id">
+                    <img src="@Model.TvShow.imageSrc" alt="@Model.TvShow.Name">
+                    <hr />
+                    <p class="card-title">@Model.TvShow.Name</p>
+                </a>
+            </div>
+        </div>
+    </section>
+}

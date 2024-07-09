@@ -1,0 +1,30 @@
+﻿@model IEnumerable<UsersVM>
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h1>المستخدمين</h1>
+
+<table class="table table-striped mt-4">
+    <thead>
+        <tr class="bg-primary text-white">
+            <th>اسم المستخدم</th>
+            <th>البريد الألكتروني</th>
+            <th>الأدوار</th>
+            <th>الخيارات</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@string.Join(" , ", user.Roles.ToList())</td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">إدارة الأدوار</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
