@@ -2,7 +2,7 @@ Aflamak is a web application inspired by Netflix, designed to offer a rich strea
 
 Features
 
-    Homepage Highlights: Displays the latest films, TV shows, and episodes, with a special focus on Arabic content and Ramadan TV shows.
+    Homepage Highlights: Displays the latest and top-rated films, TV shows, and episodes, with a special focus on Arabic content and Ramadan TV shows.
     Advanced Filtering: Filter content by year, language, category, and type.
     Comprehensive Search: Search for actors, producers, films, and TV shows in both Arabic and English.
     Detailed Content Views: View cast and crew details, related films, and like/dislike counts for each film and TV show.
