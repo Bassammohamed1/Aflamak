@@ -2,7 +2,6 @@
     font-family: "Amiri", serif;
 }
 
-/*pagination*/
 .pagination {
     display: flex;
     justify-content: center;
@@ -36,7 +35,6 @@
         pointer-events: none;
     }
 
-/*choose file*/
 .file-input-container {
     position: relative;
     display: inline-block;
@@ -58,7 +56,6 @@
         margin-right: 10px;
     }
 
-/*swiper*/
 .swiper {
     width: 100%;
     height: 100%;
@@ -170,13 +167,13 @@ main {
 }
 
     .series .swiper-slide img {
-        width: 100%; /* Make the image take up the full width of its container */
-        height: auto; /* Set a fixed height */
-        object-fit: cover; /* Ensures the image fits within the specified size */
+        width: 100%; 
+        height: auto; 
+        object-fit: cover; 
     }
 
     .series .swiper-slide {
-        width: 20%; /* Ensure each slide takes up 20% of the swiper container, adjust as needed */
+        width: 20%; 
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -485,7 +482,7 @@ body {
     width: 150px;
     margin: 10px;
     border: 1px solid #ccc;
-    text-align: center; /* Center the text */
+    text-align: center; 
     scroll-snap-align: start;
 }
 
@@ -496,19 +493,19 @@ body {
 
     .movie-item img, .producer-item img, .actor-item img {
         width: 100%;
-        height: 200px; /* Set the desired height */
-        object-fit: cover; /* Ensure the image covers the area */
-        border-bottom: 1px solid #ccc; /* Border between image and hr */
+        height: 200px; 
+        object-fit: cover; 
+        border-bottom: 1px solid #ccc; 
     }
 
     .movie-item hr, .producer-item hr, .actor-item hr {
-        margin: 0; /* Remove default margin */
-        border: none; /* Remove default border */
-        border-top: 1px solid #ccc; /* Add custom border */
+        margin: 0;
+        border: none; 
+        border-top: 1px solid #ccc; 
     }
 
     .movie-item p, .producer-item p, .actor-item p {
-        margin: 5px 0; /* Adjust the margin as needed */
+        margin: 5px 0; 
         height: 40px;
         overflow-x: clip;
     }
@@ -558,13 +555,12 @@ body {
     }
 
 .Filled-button {
-    background-color: deepskyblue;
+    background-color: #0000FF;
     color: white;
     width: 70px;
 }
 
 .unFilled-button {
-    background-color: white;
     color: black;
     width: 70px;
 }
