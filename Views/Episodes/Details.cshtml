@@ -54,16 +54,20 @@
     </div>
 
     <div class="feedback">
-        <div class="card @(Model.HasUserLiked ? "Filled-button" : "unFilled-button")">
+        <div class="feedback-section">
             <a asp-action="LikeEpisode" asp-route-episodeId="@Model.Episode.Id">
-                <p class="card-header">@Model.Episode.NoOfLikes</p>
-                <p class="card-footer"><i class="fa fa-thumbs-up"></i></p>
+                <p class="@(Model.HasUserLiked ? "filled-button" : "unfilled-button")">@Model.Episode.NoOfLikes</p>
+                <hr>
+                <p class="like">
+                    @(Model.HasUserLiked ? "! Liked" : "Like")
+                </p>
             </a>
         </div>
-        <div class="card @(Model.HasUserDisliked ? "Filled-button" : "unFilled-button")">
+        <div class="feedback-section">
             <a asp-action="DisLikeEpisode" asp-route-episodeId="@Model.Episode.Id">
-                <p class="card-header">@Model.Episode.NoOfDisLikes</p>
-                <p class="card-footer"><i class="fa fa-thumbs-down"></i></p>
+                <p class="@(Model.HasUserDisliked ? "filled-button" : "unfilled-button")">@Model.Episode.NoOfDisLikes</p>
+                <hr>
+                <p class="dislike">@(Model.HasUserDisliked ? "! DisLiked" : "DisLike")</p>
             </a>
         </div>
     </div>

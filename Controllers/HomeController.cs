@@ -1,10 +1,10 @@
 ﻿using Aflamak.Data.Enums;
-using Aflamak.Models;
 using Aflamak.Models.ViewModels;
 using Aflamak.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aflamak.Controllers
 {

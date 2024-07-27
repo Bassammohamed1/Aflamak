@@ -54,19 +54,24 @@
     </div>
 
     <div class="feedback">
-        <div class="card @(Model.HasUserLiked ? "Filled-button" : "unFilled-button")">
+        <div class="feedback-section">
             <a asp-action="LikeFilm" asp-route-filmId="@Model.Film.Id">
-                <p class="card-header">@Model.Film.NoOfLikes</p>
-                <p class="card-footer"><i class="fa fa-thumbs-up"></i></p>
+                <p class="@(Model.HasUserLiked ? "filled-button" : "unfilled-button")">@Model.Film.NoOfLikes</p>
+                <hr>
+                <p class="like">
+                    @(Model.HasUserLiked ? "! Liked" : "Like")
+                </p>
             </a>
         </div>
-        <div class="card @(Model.HasUserDisliked ? "Filled-button" : "unFilled-button")">
+        <div class="feedback-section">
             <a asp-action="DisLikeFilm" asp-route-filmId="@Model.Film.Id">
-                <p class="card-header">@Model.Film.NoOfDisLikes</p>
-                <p class="card-footer"><i class="fa fa-thumbs-down"></i></p>
+                <p class="@(Model.HasUserDisliked ? "filled-button" : "unfilled-button")">@Model.Film.NoOfDisLikes</p>
+                <hr>
+                <p class="dislike">@(Model.HasUserDisliked ? "! DisLiked" : "DisLike")</p>
             </a>
         </div>
     </div>
+
 
     <div class="rating">
         <h2 class="rating-header">القصة</h2>

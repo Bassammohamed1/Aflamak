@@ -244,7 +244,7 @@ namespace Aflamak.Controllers
             return View("Details", viewModel);
         }
         [AllowAnonymous]
-        public IActionResult DislikeEpisode(int episodeId)
+        public IActionResult DisLikeEpisode(int episodeId)
         {
             Episode episode = new Episode();
 
