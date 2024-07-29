@@ -2,9 +2,9 @@
 {
     public class SearchVM
     {
-        public Film? Film { get; set; }
-        public TvShow? TvShow { get; set; }
-        public Actor? Actor { get; set; }
-        public Producer? Producer { get; set; }
+        public List<Film> Films { get; set; }
+        public List<TvShow> TvShows { get; set; }
+        public List<Actor> Actors { get; set; }
+        public List<Producer> Producers { get; set; }
     }
 }

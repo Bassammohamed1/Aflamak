@@ -385,20 +385,20 @@ namespace Aflamak.Controllers
         }
         public IActionResult Filter(string searchString)
         {
-            var producer = _unitOfWork.Producers.GetProducer(searchString);
+            var producers = _unitOfWork.Producers.GetProducer(searchString);
 
-            var actor = _unitOfWork.Actors.GetActor(searchString);
+            var actors = _unitOfWork.Actors.GetActor(searchString);
 
-            var film = _unitOfWork.Films.GetFilm(searchString);
+            var films = _unitOfWork.Films.GetFilm(searchString);
 
-            var tvshow = _unitOfWork.TvShows.GetTvShow(searchString);
+            var tvshows = _unitOfWork.TvShows.GetTvShow(searchString);
 
             var viewModel = new SearchVM()
             {
-                Producer = producer,
-                Actor = actor,
-                Film = film,
-                TvShow = tvshow
+                Producers = producers,
+                Actors = actors,
+                Films = films,
+                TvShows = tvshows
             };
 
             return View(viewModel);

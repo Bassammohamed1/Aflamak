@@ -275,11 +275,15 @@ namespace Aflamak.Repository
 
             return data.AsQueryable();
         }
-        public TvShow GetTvShow(string key)
+        public List<TvShow> GetTvShow(string key)
         {
-            var tvshow = _context.TvShows.SingleOrDefault(x => x.Name.ToLower() == key.ToLower());
-  
-            return tvshow;
+            var data = new List<TvShow>();
+            foreach (var tvshow in _context.TvShows)
+            {
+                if (tvshow.Name.Contains(key))
+                    data.Add(tvshow);
+            }
+            return data;
         }
     }
 }

@@ -167,13 +167,13 @@ main {
 }
 
     .series .swiper-slide img {
-        width: 100%; 
-        height: auto; 
-        object-fit: cover; 
+        width: 100%;
+        height: auto;
+        object-fit: cover;
     }
 
     .series .swiper-slide {
-        width: 20%; 
+        width: 20%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -462,7 +462,7 @@ body {
     text-align: center;
     border: 1px solid #ccc;
     padding: 0;
-    width: 100px; /* Adjust width as needed */
+    width: 100px; 
 }
 
     .feedback-section p {
@@ -522,7 +522,7 @@ hr {
     width: 150px;
     margin: 10px;
     border: 1px solid #ccc;
-    text-align: center; 
+    text-align: center;
     scroll-snap-align: start;
 }
 
@@ -533,19 +533,19 @@ hr {
 
     .movie-item img, .producer-item img, .actor-item img {
         width: 100%;
-        height: 200px; 
-        object-fit: cover; 
-        border-bottom: 1px solid #ccc; 
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #ccc;
     }
 
     .movie-item hr, .producer-item hr, .actor-item hr {
         margin: 0;
-        border: none; 
-        border-top: 1px solid #ccc; 
+        border: none;
+        border-top: 1px solid #ccc;
     }
 
     .movie-item p, .producer-item p, .actor-item p {
-        margin: 5px 0; 
+        margin: 5px 0;
         height: 40px;
         overflow-x: clip;
     }
@@ -580,7 +580,7 @@ hr {
 
 .navbar_nav {
     display: flex;
-    align-items: center; 
+    align-items: center;
 }
 
 .custom_button {
@@ -590,6 +590,6 @@ hr {
     display: block;
 }
 
-    .custom-button:hover {
-        background-color: rebeccapurple; 
-    }
+.custom-button:hover {
+    background-color: rebeccapurple;
+}

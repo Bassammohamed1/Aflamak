@@ -13,14 +13,15 @@ namespace Aflamak.Repository
             _context = context;
         }
 
-        public Producer GetProducer(string key)
+        public List<Producer> GetProducer(string key)
         {
-            var producer = _context.Producers.SingleOrDefault(x => x.Name.ToLower() == key.ToLower());
-            if (producer == null)
+            var data = new List<Producer>();
+            foreach (var producer in _context.Producers)
             {
-                producer = _context.Producers.SingleOrDefault(x => x.AnotherLangName.ToLower() == key.ToLower());
+                if (producer.Name.Contains(key) || producer.AnotherLangName.Contains(key))
+                    data.Add(producer);
             }
-            return producer;
+            return data;
         }
     }
 }

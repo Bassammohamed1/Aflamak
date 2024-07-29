@@ -7,7 +7,7 @@ namespace Aflamak.Repository.Interfaces
     {
         public TvShow GetTvShowById(int id);
         public IEnumerable<TvShow> GetTvShows();
-        public IQueryable<TvShow> GetFilteredTvShowsWithId(int id,string Key);
+        public IQueryable<TvShow> GetFilteredTvShowsWithId(int id, string Key);
         public IQueryable<TvShow> GetFilteredTvShows(string genre, string country, int? language, int? year, bool isArabic = false, bool isRamadan = false);
         public IQueryable<TvShow> GetRecentTvShows(int page);
         public IQueryable<TvShow> GetTopRatedTvShows(int page);
@@ -21,6 +21,6 @@ namespace Aflamak.Repository.Interfaces
         public IQueryable<TvShow> RecentTvShows();
         public IQueryable<TvShow> ArabicTvShows();
         public IQueryable<TvShow> RamadanTvShows();
-        public TvShow GetTvShow(string key);
+        public List<TvShow> GetTvShow(string key);
     }
 }

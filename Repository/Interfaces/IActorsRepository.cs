@@ -3,7 +3,7 @@
 namespace Aflamak.Repository.Interfaces
 {
     public interface IActorsRepository : IRepository<Actor>
-    { 
-        Actor GetActor(string key);
+    {
+        List<Actor> GetActor(string key);
     }
 }

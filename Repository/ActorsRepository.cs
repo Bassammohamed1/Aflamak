@@ -13,14 +13,15 @@ namespace Aflamak.Repository
             _context = context;
         }
 
-        public Actor GetActor(string key)
+        public List<Actor> GetActor(string key)
         {
-            var actor = _context.Actors.SingleOrDefault(x => x.Name.ToLower() == key.ToLower());
-            if (actor == null)
+            var data = new List<Actor>();
+            foreach (var actor in _context.Actors)
             {
-                actor = _context.Actors.SingleOrDefault(x => x.AnotherLangName.ToLower() == key.ToLower());
+                if (actor.Name.Contains(key) || actor.AnotherLangName.Contains(key))
+                    data.Add(actor);
             }
-            return actor;
+            return data;
         }
     }
 }

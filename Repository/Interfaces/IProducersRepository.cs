@@ -4,6 +4,6 @@ namespace Aflamak.Repository.Interfaces
 {
     public interface IProducersRepository : IRepository<Producer>
     {
-        Producer GetProducer(string key);
+        List<Producer> GetProducer(string key);
     }
 }

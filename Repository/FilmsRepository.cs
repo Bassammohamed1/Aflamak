@@ -249,11 +249,15 @@ namespace Aflamak.Repository
 
             return data.AsQueryable();
         }
-        public Film GetFilm(string key)
+        public List<Film> GetFilm(string key)
         {
-            var film = _context.Films.SingleOrDefault(x => x.Name.ToLower() == key.ToLower());
-
-            return film;
+            var data = new List<Film>();
+            foreach (var film in _context.Films)
+            {
+                if (film.Name.Contains(key))
+                    data.Add(film);
+            }
+            return data;
         }
     }
 }
