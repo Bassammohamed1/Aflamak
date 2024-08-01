@@ -4,6 +4,6 @@ namespace Aflamak.Repository.Interfaces
 {
     public interface IActorsRepository : IRepository<Actor>
     {
-        List<Actor> GetActor(string key);
+        IQueryable<Actor> GetActorsForSearch(string key);
     }
 }

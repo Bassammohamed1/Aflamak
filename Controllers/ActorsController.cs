@@ -7,7 +7,7 @@ using X.PagedList;
 
 namespace Aflamak.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class ActorsController : Controller
     {
         private IUnitOfWork _unitOfWork;
@@ -104,28 +104,18 @@ namespace Aflamak.Controllers
             if (actor == null)
                 return NotFound();
 
-            var data = _unitOfWork.ActorFilms.GetAllWithoutPagination().Where(a => a.ActorId == actor.Id);
-            List<int> ids = new List<int>();
-            foreach (var item in data)
-            {
-                ids.Add(item.FilmId);
-            }
+            var ids1 = _unitOfWork.ActorFilms.GetAllWithoutPagination().Where(a => a.ActorId == actor.Id).Select(a => a.FilmId);
             List<Film> actorFilms = new List<Film>();
-            foreach (var item in ids)
-            {
-                actorFilms.AddRange(_unitOfWork.Films.GetFilteredFilmsWithId(item,"ID"));
-            }
-
-            var data1 = _unitOfWork.ActorTvShows.GetAllWithoutPagination().Where(a => a.ActorId == actor.Id);
-            List<int> ids1 = new List<int>();
-            foreach (var item in data1)
-            {
-                ids1.Add(item.TvShowId);
-            }
-            List<TvShow> actorTvShows = new List<TvShow>();
             foreach (var item in ids1)
             {
-                actorTvShows.AddRange(_unitOfWork.TvShows.GetFilteredTvShowsWithId(item,"ID"));
+                actorFilms.AddRange(_unitOfWork.Films.GetFilteredFilmsWithId(item, "ID"));
+            }
+
+            var ids2 = _unitOfWork.ActorTvShows.GetAllWithoutPagination().Where(a => a.ActorId == actor.Id).Select(a => a.TvShowId);
+            List<TvShow> actorTvShows = new List<TvShow>();
+            foreach (var item in ids2)
+            {
+                actorTvShows.AddRange(_unitOfWork.TvShows.GetFilteredTvShowsWithId(item, "ID"));
             }
 
             var works = actorFilms.Select(f => new ItemViewModel { Type = "Film", Item = f }).

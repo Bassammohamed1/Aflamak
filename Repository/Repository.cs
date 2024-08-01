@@ -8,12 +8,10 @@ namespace Aflamak.Repository
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly AppDbContext _context;
-
         public Repository(AppDbContext context)
         {
             _context = context;
         }
-
         public IEnumerable<T> GetAll(int pageNumber, int pageSize)
         {
             return _context.Set<T>().ToPagedList(pageNumber, pageSize);

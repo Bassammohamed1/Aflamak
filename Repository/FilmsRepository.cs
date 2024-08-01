@@ -1,5 +1,4 @@
 ﻿using Aflamak.Data;
-using Aflamak.Data.Enums;
 using Aflamak.Models;
 using Aflamak.Models.ViewModels;
 using Aflamak.Repository.Interfaces;
@@ -211,19 +210,19 @@ namespace Aflamak.Repository
         }
         public IQueryable<Film> MostWatchedFilms()
         {
-            return _context.Films.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 1);
+            return _context.Films.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 1).AsNoTracking();
         }
         public IQueryable<Film> RecentFilms()
         {
-            return _context.Films.OrderByDescending(x => x.Year).ThenByDescending(x => x.Month).Where(m => m.Type == 1);
+            return _context.Films.OrderByDescending(x => x.Year).ThenByDescending(x => x.Month).Where(m => m.Type == 1).AsNoTracking();
         }
         public IQueryable<Film> ArabicFilms()
         {
-            return _context.Films.Where(m => m.Type == 1 && m.Language == 1);
+            return _context.Films.Where(m => m.Type == 1 && m.Language == 1).AsNoTracking();
         }
         public IQueryable<Film> CartoonFilms()
         {
-            return _context.Films.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 3);
+            return _context.Films.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 3).AsNoTracking();
         }
         public IQueryable<Film> GetRecentFilms(int page)
         {
@@ -249,15 +248,9 @@ namespace Aflamak.Repository
 
             return data.AsQueryable();
         }
-        public List<Film> GetFilm(string key)
+        public IQueryable<Film> GetFilmsForSearch(string key)
         {
-            var data = new List<Film>();
-            foreach (var film in _context.Films)
-            {
-                if (film.Name.Contains(key))
-                    data.Add(film);
-            }
-            return data;
+            return _context.Films.Where(a => a.Name.Contains(key));
         }
     }
 }

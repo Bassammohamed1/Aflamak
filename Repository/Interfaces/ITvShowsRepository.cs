@@ -21,6 +21,6 @@ namespace Aflamak.Repository.Interfaces
         public IQueryable<TvShow> RecentTvShows();
         public IQueryable<TvShow> ArabicTvShows();
         public IQueryable<TvShow> RamadanTvShows();
-        public List<TvShow> GetTvShow(string key);
+        public IQueryable<TvShow> GetTvShowsForSearch(string key);
     }
 }

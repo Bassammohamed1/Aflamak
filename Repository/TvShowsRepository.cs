@@ -213,22 +213,22 @@ namespace Aflamak.Repository
         }
         public IQueryable<TvShow> MostWatchedTvShows()
         {
-            return _context.TvShows.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 2);
+            return _context.TvShows.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 2).AsNoTracking();
         }
         public IQueryable<TvShow> RecentTvShows()
         {
-            return _context.TvShows.OrderByDescending(x => x.Year).ThenByDescending(x => x.Month).Where(m => m.Type == 2 && !m.IsRamadan);
+            return _context.TvShows.OrderByDescending(x => x.Year).ThenByDescending(x => x.Month).Where(m => m.Type == 2 && !m.IsRamadan).AsNoTracking();
         }
         public IQueryable<TvShow> ArabicTvShows()
         {
-            return _context.TvShows.Where(m => m.Type == 2 && m.Language == 1 && !m.IsRamadan);
+            return _context.TvShows.Where(m => m.Type == 2 && m.Language == 1 && !m.IsRamadan).AsNoTracking();
         }
         public IQueryable<TvShow> RamadanTvShows()
         {
             var data = new List<TvShow>();
-            var tvshows1 = _context.TvShows.Where(m => m.Type == 2 && m.IsRamadan && m.Year == DateTime.Today.Year && m.Month < 8).OrderBy(x => x.Year);
+            var tvshows1 = _context.TvShows.Where(m => m.Type == 2 && m.IsRamadan && m.Year == DateTime.Today.Year && m.Month < 8).OrderBy(x => x.Year).AsNoTracking();
             data.AddRange(tvshows1);
-            var tvshows2 = _context.TvShows.Where(m => m.Type == 2 && m.IsRamadan && (m.Year == DateTime.Today.Year || m.Year == DateTime.Today.Year - 1) && m.Month >= 8).OrderBy(x => x.Year);
+            var tvshows2 = _context.TvShows.Where(m => m.Type == 2 && m.IsRamadan && (m.Year == DateTime.Today.Year || m.Year == DateTime.Today.Year - 1) && m.Month >= 8).OrderBy(x => x.Year).AsNoTracking();
             data.AddRange(tvshows2);
 
             bool flag = false;
@@ -275,15 +275,9 @@ namespace Aflamak.Repository
 
             return data.AsQueryable();
         }
-        public List<TvShow> GetTvShow(string key)
+        public IQueryable<TvShow> GetTvShowsForSearch(string key)
         {
-            var data = new List<TvShow>();
-            foreach (var tvshow in _context.TvShows)
-            {
-                if (tvshow.Name.Contains(key))
-                    data.Add(tvshow);
-            }
-            return data;
+            return _context.TvShows.Where(a => a.Name.Contains(key));
         }
     }
 }

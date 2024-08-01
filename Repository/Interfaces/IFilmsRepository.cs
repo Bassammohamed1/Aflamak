@@ -20,6 +20,6 @@ namespace Aflamak.Repository.Interfaces
         public IQueryable<Film> RecentFilms();
         public IQueryable<Film> ArabicFilms();
         public IQueryable<Film> CartoonFilms();
-        public List<Film> GetFilm(string key);
+        public IQueryable<Film> GetFilmsForSearch(string key);
     }
 }
