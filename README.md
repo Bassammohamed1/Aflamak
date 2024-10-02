@@ -26,3 +26,18 @@ Aflamak is a web application, designed to offer a rich streaming experience for 
     Admins can log in to manage roles and users.
 
 # Some Photos of the App
+<div align="center">
+<img src="images/1.png" alt="Alt text" width="500" height="300">
+<img src="images/2.png" alt="Alt text" width="500" height="300">
+<img src="images/3.png" alt="Alt text" width="500" height="300">
+<img src="images/4.png" alt="Alt text" width="500" height="300">
+<img src="images/5.png" alt="Alt text" width="500" height="300">
+<img src="images/6.png" alt="Alt text" width="500" height="300">
+<img src="images/7.png" alt="Alt text" width="500" height="300">
+<img src="images/8.png" alt="Alt text" width="500" height="300">
+<img src="images/9.png" alt="Alt text" width="500" height="300">
+<img src="images/10.png" alt="Alt text" width="500" height="300">
+<img src="images/11.png" alt="Alt text" width="500" height="300">
+<img src="images/12.png" alt="Alt text" width="500" height="300">
+<img src="images/13.png" alt="Alt text" width="500" height="300">
+</div>
