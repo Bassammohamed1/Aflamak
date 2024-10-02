@@ -26,4 +26,3 @@ Aflamak is a web application, designed to offer a rich streaming experience for 
     Admins can log in to manage roles and users.
 
 # Some Photos of the App
- 
