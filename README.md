@@ -30,7 +30,7 @@
 
 # Some Photos of the App
 
-    <div align="center">
+<div align="center">
     <img src="images/1.png" alt="Alt text" width="500" height="300">
     <img src="images/2.png" alt="Alt text" width="500" height="300">
     <img src="images/3.png" alt="Alt text" width="500" height="300">
@@ -44,4 +44,4 @@
     <img src="images/11.png" alt="Alt text" width="500" height="300">
     <img src="images/12.png" alt="Alt text" width="500" height="300">
     <img src="images/13.png" alt="Alt text" width="500" height="300">
-    </div>
+</div>
