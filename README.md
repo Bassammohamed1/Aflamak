@@ -1,3 +1,4 @@
+# Aflamak
 Aflamak is a web application, designed to offer a rich streaming experience for films, TV shows, and episodes. Built using C#, SQL Server, and .NET, it includes a variety of features to enhance user engagement and satisfaction.
 
 # Features
@@ -14,7 +15,7 @@ Aflamak is a web application, designed to offer a rich streaming experience for 
     C#
     SQL Server
     .NET
-    
+    ASP.Net Core MVC    
 # Usage
 
     Visit the homepage to browse the latest and top-rated content.
