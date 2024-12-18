@@ -17,6 +17,12 @@
     SQL Server
     .NET
     ASP.Net Core MVC   
+
+# Test
+
+    Unit Testing: Comprehensive unit tests have been implemented for all functions using xUnit.
+    In-Memory Database: Used for efficient testing of database-related operations without affecting the actual database.
+    Dependency Mocking: Dependencies are mocked using FakeItEasy, ensuring isolated and reliable tests.
     
 # Usage
 
