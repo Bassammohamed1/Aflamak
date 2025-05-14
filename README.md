@@ -1,6 +1,6 @@
 # Aflamak
 
-    Aflamak is a web application, designed to offer a rich streaming experience for films, TV shows, and episodes. Built using C#, SQL Server, and .NET, it includes a variety of features to enhance user engagement and           satisfaction.
+    Aflamak is a web application, designed to offer a rich streaming experience for films, TV shows, and episodes. Built using C#, SQL Server, and .NET, it includes a       variety of features to enhance user engagement and satisfaction.
 
 # Features
 
@@ -33,6 +33,10 @@
     Search for specific actors, producers, films, or TV shows.
     
     Admins can log in to manage roles and users.
+
+# Live Demo 
+
+https://aflamak.runasp.net/
 
 # Some Photos of the App
 
