@@ -1,54 +1,63 @@
-# 🎬 Aflamak – Your Gateway to Arabic & International Entertainment
+# 🎬 Aflamak – Streaming Web Application
 
-Aflamak is a full-featured streaming web application that delivers a rich viewing experience for **films, TV shows, and episodes**, with a dedicated focus on **Arabic content** and **Ramadan specials**.  
-Built with **C#, ASP.NET Core MVC, and SQL Server**, it offers powerful search, filtering, and management tools for both users and administrators.
+![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet?logo=dotnet&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-Professional-green?logo=csharp)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-Database-red?logo=microsoftsqlserver)
+![SignalR](https://img.shields.io/badge/RealTime-NotApplicable-lightgrey)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Tests](https://img.shields.io/badge/Tests-xUnit%20%2B%20FakeItEasy-success)
+
+> A streaming platform for **films, TV shows, and episodes**, with a strong focus on **Arabic content** and **Ramadan specials**.
 
 ---
 
-## 🚀 Features
+## 📌 Features
 
 ### 🎥 User Experience
-- **Homepage Highlights:** Latest & top-rated films, TV shows, and episodes.
-- **Arabic & Ramadan Content:** Curated sections for regional and seasonal favorites.
-- **Advanced Filtering:** By year, language, category, and type.
-- **Comprehensive Search:** Actors, producers, films, and TV shows in **both Arabic & English**.
-- **Detailed Views:** Cast, crew, related content, and like/dislike stats.
-- **TV Show Navigation:** Organized by parts and episodes.
+- Homepage with latest & top-rated content.
+- Dedicated sections for **Arabic & Ramadan** titles.
+- Advanced filtering by **Year, Language, Category, Type**.
+- Bilingual search (Arabic & English) for actors, producers, films, and shows.
+- Detailed views: cast & crew, related titles, like/dislike counts.
+- TV show breakdown by parts & episodes.
 
-### 🛠 Admin Tools
-- Manage **Actors, Producers, Films, TV Shows, Roles, and Users**.
-- Role-based access control for secure operations.
+### 🛠 Admin Panel
+- Manage **Actors, Producers, Films, TV Shows, Categories, Roles, and Users**.
+- Role-based access control.
 
 ---
 
 ## 🧪 Testing & Quality Assurance
-- **Unit Testing:** Full coverage using **xUnit**.
-- **In-Memory Database:** Safe, isolated DB testing without impacting production.
-- **Mocking with FakeItEasy:** Ensures reliable, dependency-free tests.
+- **xUnit** unit tests for core features.
+- **InMemory Database** for safe DB testing.
+- **FakeItEasy** for mocking dependencies.
 
 ---
 
 ## 🛠 Tech Stack
-- **Backend:** C#, ASP.NET Core MVC
-- **Database:** SQL Server
-- **Testing:** xUnit, FakeItEasy
-- **Architecture:** Layered MVC
+| Layer | Technology |
+|-------|------------|
+| **Backend** | C#, ASP.NET Core MVC |
+| **Database** | SQL Server, EF Core |
+| **Testing** | xUnit, FakeItEasy |
+| **Frontend** | HTML, CSS, JavaScript |
 
 ---
 
-## 📸 Usage
-1. **Browse** latest and top-rated content from the homepage.
-2. **Filter** by your preferred year, language, category, or type.
-3. **Search** for actors, producers, or specific titles in Arabic or English.
-4. **Engage** with content by viewing details, liking/disliking, and exploring related titles.
-5. **Admins:** Securely log in to manage content and users.
+## 📐 Architecture
+
+[Client] → [ASP.NET Core MVC] → [Business Logic] → [Data Access Layer] → [SQL Server]
+
+*(3-Tier Architecture ensures separation of concerns and testability.)*
 
 ---
 
 ## 🌐 Live Demo
-🔗 **[Aflamak Live](https://aflamak.runasp.net/)**
+
+🔗 [Aflamak Live](https://aflamak.runasp.net/)
 
 ---
 
-## 📜 License
-This project is licensed under the MIT License.
+## 📄 License
+
+MIT License
