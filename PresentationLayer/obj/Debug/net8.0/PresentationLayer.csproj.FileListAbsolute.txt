@@ -1,0 +1,9 @@
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.csproj.AssemblyReference.cache
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\rpswa.dswa.cache.json
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.GeneratedMSBuildEditorConfig.editorconfig
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.AssemblyInfoInputs.cache
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.AssemblyInfo.cs
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.csproj.CoreCompileInputs.cache
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.MvcApplicationPartsAssemblyInfo.cache
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.RazorAssemblyInfo.cache
+E:\My Projects\Aflamak\Aflamak\obj\Debug\net8.0\PresentationLayer.RazorAssemblyInfo.cs

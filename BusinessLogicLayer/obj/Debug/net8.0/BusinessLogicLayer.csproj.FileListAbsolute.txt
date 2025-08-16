@@ -1,0 +1,15 @@
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.csproj.AssemblyReference.cache
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.GeneratedMSBuildEditorConfig.editorconfig
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.AssemblyInfoInputs.cache
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.AssemblyInfo.cs
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.csproj.CoreCompileInputs.cache
+E:\My Projects\Aflamak\BusinessLogicLayer\bin\Debug\net8.0\BusinessLogicLayer.deps.json
+E:\My Projects\Aflamak\BusinessLogicLayer\bin\Debug\net8.0\BusinessLogicLayer.dll
+E:\My Projects\Aflamak\BusinessLogicLayer\bin\Debug\net8.0\BusinessLogicLayer.pdb
+E:\My Projects\Aflamak\BusinessLogicLayer\bin\Debug\net8.0\DataAccessLayer.dll
+E:\My Projects\Aflamak\BusinessLogicLayer\bin\Debug\net8.0\DataAccessLayer.pdb
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\Business.450209FB.Up2Date
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.dll
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\refint\BusinessLogicLayer.dll
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.pdb
+E:\My Projects\Aflamak\BusinessLogicLayer\obj\Debug\net8.0\ref\BusinessLogicLayer.dll

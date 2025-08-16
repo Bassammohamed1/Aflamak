@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Aflamak\Aflamak.csproj" />
+    <ProjectReference Include="..\Aflamak\PresentationLayer.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4731,7 +4731,20 @@
           "build/netcoreapp3.1/xunit.runner.visualstudio.props": {}
         }
       },
-      "Aflamak/1.0.0": {
+      "BusinessLogicLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "DataAccessLayer": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/BusinessLogicLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BusinessLogicLayer.dll": {}
+        }
+      },
+      "DataAccessLayer/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
@@ -4746,10 +4759,26 @@
           "X.PagedList.Mvc.Core": "9.1.2"
         },
         "compile": {
-          "bin/placeholder/Aflamak.dll": {}
+          "bin/placeholder/DataAccessLayer.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Aflamak.dll": {}
+          "bin/placeholder/DataAccessLayer.dll": {}
+        }
+      },
+      "PresentationLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "BusinessLogicLayer": "1.0.0",
+          "Microsoft.AspNetCore.Identity.UI": "8.0.4",
+          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "8.0.2",
+          "X.PagedList.Mvc.Core": "9.1.2"
+        },
+        "compile": {
+          "bin/placeholder/PresentationLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PresentationLayer.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
@@ -13861,25 +13890,36 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
-    "Aflamak/1.0.0": {
+    "BusinessLogicLayer/1.0.0": {
       "type": "project",
-      "path": "../Aflamak/Aflamak.csproj",
-      "msbuildProject": "../Aflamak/Aflamak.csproj"
+      "path": "../BusinessLogicLayer/BusinessLogicLayer.csproj",
+      "msbuildProject": "../BusinessLogicLayer/BusinessLogicLayer.csproj"
+    },
+    "DataAccessLayer/1.0.0": {
+      "type": "project",
+      "path": "../DataAccessLayer/DataAccessLayer.csproj",
+      "msbuildProject": "../DataAccessLayer/DataAccessLayer.csproj"
+    },
+    "PresentationLayer/1.0.0": {
+      "type": "project",
+      "path": "../Aflamak/PresentationLayer.csproj",
+      "msbuildProject": "../Aflamak/PresentationLayer.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Aflamak >= 1.0.0",
       "FakeItEasy >= 8.3.0",
       "Microsoft.EntityFrameworkCore.InMemory >= 9.0.0",
       "Microsoft.NET.Test.Sdk >= 17.6.0",
+      "PresentationLayer >= 1.0.0",
       "coverlet.collector >= 6.0.0",
       "xunit >= 2.4.2",
       "xunit.runner.visualstudio >= 2.4.5"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\bassa\\.nuget\\packages\\": {}
+    "C:\\Users\\bassa\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -13890,8 +13930,12 @@
       "packagesPath": "C:\\Users\\bassa\\.nuget\\packages\\",
       "outputPath": "E:\\My Projects\\Aflamak\\AflamakTests\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
         "C:\\Users\\bassa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -13905,8 +13949,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "E:\\My Projects\\Aflamak\\Aflamak\\Aflamak.csproj": {
-              "projectPath": "E:\\My Projects\\Aflamak\\Aflamak\\Aflamak.csproj"
+            "E:\\My Projects\\Aflamak\\Aflamak\\PresentationLayer.csproj": {
+              "projectPath": "E:\\My Projects\\Aflamak\\Aflamak\\PresentationLayer.csproj"
             }
           }
         }
@@ -13915,7 +13959,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -13966,7 +14016,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

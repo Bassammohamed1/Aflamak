@@ -1,0 +1,28 @@
+﻿@page
+@using PresentationLayer.Areas.Identity.Pages.Account.Manage
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+<h3>البيانات الشخصية</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>يحتوي حسابك على البيانات الشخصية التي قدمتها لنا. تتيح لك هذه الصفحة تنزيل تلك البيانات أو حذفها.</p>
+        <p>
+            <strong>سيؤدي حذف هذه البيانات إلى إزالة حسابك نهائيًا، ولا يمكن استرداد ذلك.</strong>
+        </p>
+        <form id="download-data" asp-page="DownloadPersonalData" method="post">
+            <button class="btn btn-primary" type="submit">تحميل</button>
+        </form>
+        <p>
+            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">حذف</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

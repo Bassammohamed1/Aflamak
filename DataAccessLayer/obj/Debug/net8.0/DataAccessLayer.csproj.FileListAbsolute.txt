@@ -1,0 +1,14 @@
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.csproj.AssemblyReference.cache
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.GeneratedMSBuildEditorConfig.editorconfig
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.AssemblyInfoInputs.cache
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.AssemblyInfo.cs
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.csproj.CoreCompileInputs.cache
+E:\My Projects\Aflamak\DataAccessLayer\bin\Debug\net8.0\DataAccessLayer.deps.json
+E:\My Projects\Aflamak\DataAccessLayer\bin\Debug\net8.0\DataAccessLayer.runtimeconfig.json
+E:\My Projects\Aflamak\DataAccessLayer\bin\Debug\net8.0\DataAccessLayer.dll
+E:\My Projects\Aflamak\DataAccessLayer\bin\Debug\net8.0\DataAccessLayer.pdb
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.dll
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\refint\DataAccessLayer.dll
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.pdb
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.genruntimeconfig.cache
+E:\My Projects\Aflamak\DataAccessLayer\obj\Debug\net8.0\ref\DataAccessLayer.dll
