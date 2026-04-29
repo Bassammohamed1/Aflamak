@@ -1,5 +1,6 @@
 ﻿using DataAccessLayer.Data;
 using DataAccessLayer.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 
 namespace DataAccessLayer.Repository
@@ -7,39 +8,46 @@ namespace DataAccessLayer.Repository
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly AppDbContext _context;
+       
         public Repository(AppDbContext context)
         {
             _context = context;
         }
-        public IEnumerable<T> GetAll(int pageNumber, int pageSize)
+        
+        public async Task<IEnumerable<T>> GetAll(int pageNumber, int pageSize)
         {
-            var result = _context.Set<T>().ToPagedList(pageNumber, pageSize);
+            return await _context.Set<T>().ToPagedListAsync(pageNumber, pageSize);
+        }
+        
+        public async Task<IEnumerable<T>> GetAllWithoutPagination()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+        
+        public async Task<T> GetById(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+        
+        public async Task<T> Add(T entity)
+        {
+          await  _context.Set<T>().AddAsync(entity);
 
-            return result.Any() ? result : Enumerable.Empty<T>();
+            return entity;
         }
-        public IEnumerable<T> GetAllWithoutPagination()
-        {
-            var result = _context.Set<T>().ToList();
-
-            return result.Any() ? result : Enumerable.Empty<T>();
-        }
-        public T GetById(int id)
-        {
-            var result = _context.Set<T>().Find(id);
-
-            return result is not null ? result : null;
-        }
-        public void Add(T entity)
-        {
-            _context.Set<T>().Add(entity);
-        }
-        public void Update(T entity)
+        
+        public T Update(T entity)
         {
             _context.Set<T>().Update(entity);
+
+            return entity;
         }
-        public void Delete(T entity)
+        
+        public T Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
+
+            return entity;
         }
     }
 }

@@ -4,8 +4,8 @@ namespace DataAccessLayer.Repository.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IActorsRepository Actors { get; }
-        IProducersRepository Producers { get; }
+        IRepository<Actor> Actors { get; }
+        IRepository<Producer> Producers { get; }
         IRepository<ActorFilms> ActorFilms { get; }
         IRepository<ActorTvShows> ActorTvShows { get; }
         IFilmsRepository Films { get; }
@@ -15,6 +15,6 @@ namespace DataAccessLayer.Repository.Interfaces
         IPartsRepository Parts { get; }
         IEpisodesRepository Episodes { get; }
         IRepository<Interaction> Interactions { get; }
-        void SaveChanges();
+        Task SaveChanges();
     }
 }

@@ -18,9 +18,11 @@ namespace DataAccessLayer.Data
         public DbSet<Part> Parts { get; set; }
         public DbSet<Episode> Episodes { get; set; }
         public DbSet<Interaction> Interactions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<ActorFilms>().HasKey(k => new { k.FilmId, k.ActorId });
             modelBuilder.Entity<ActorFilms>().HasOne(o => o.Actor).WithMany(m => m.ActorFilms).HasForeignKey(o => o.ActorId);
             modelBuilder.Entity<ActorFilms>().HasOne(o => o.Film).WithMany(m => m.ActorFilms).HasForeignKey(o => o.FilmId);

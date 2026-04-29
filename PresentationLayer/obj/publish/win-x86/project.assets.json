@@ -1586,29 +1586,6 @@
           "lib/netstandard2.0/_._": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Design/8.0.6": {
-        "type": "package",
-        "dependencies": {
-          "Humanizer.Core": "2.14.1",
-          "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
-          "Microsoft.EntityFrameworkCore.Relational": "8.0.6",
-          "Microsoft.Extensions.DependencyModel": "8.0.0",
-          "Mono.TextTemplating": "2.2.1"
-        },
-        "compile": {
-          "lib/net8.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "build/net8.0/Microsoft.EntityFrameworkCore.Design.props": {}
-        }
-      },
       "Microsoft.EntityFrameworkCore.Relational/8.0.6": {
         "type": "package",
         "dependencies": {
@@ -1641,18 +1618,6 @@
           "lib/net8.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
             "related": ".xml"
           }
-        }
-      },
-      "Microsoft.EntityFrameworkCore.Tools/8.0.6": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Design": "8.0.6"
-        },
-        "compile": {
-          "lib/net8.0/_._": {}
-        },
-        "runtime": {
-          "lib/net8.0/_._": {}
         }
       },
       "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
@@ -3171,6 +3136,40 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "BusinessLogicLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "DataAccessLayer": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/BusinessLogicLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BusinessLogicLayer.dll": {}
+        }
+      },
+      "DataAccessLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter": "8.0.6",
+          "Microsoft.AspNetCore.Http": "2.2.2",
+          "Microsoft.AspNetCore.Http.Features": "5.0.17",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.6",
+          "Microsoft.AspNetCore.Identity.UI": "8.0.4",
+          "Microsoft.EntityFrameworkCore": "8.0.6",
+          "Microsoft.EntityFrameworkCore.SqlServer": "8.0.6",
+          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "8.0.2",
+          "X.PagedList.Mvc.Core": "9.1.2"
+        },
+        "compile": {
+          "bin/placeholder/DataAccessLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DataAccessLayer.dll": {}
+        }
       }
     },
     "net8.0/win-x86": {
@@ -4733,29 +4732,6 @@
           "lib/netstandard2.0/_._": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Design/8.0.6": {
-        "type": "package",
-        "dependencies": {
-          "Humanizer.Core": "2.14.1",
-          "Microsoft.CodeAnalysis.CSharp.Workspaces": "4.5.0",
-          "Microsoft.EntityFrameworkCore.Relational": "8.0.6",
-          "Microsoft.Extensions.DependencyModel": "8.0.0",
-          "Mono.TextTemplating": "2.2.1"
-        },
-        "compile": {
-          "lib/net8.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "build/net8.0/Microsoft.EntityFrameworkCore.Design.props": {}
-        }
-      },
       "Microsoft.EntityFrameworkCore.Relational/8.0.6": {
         "type": "package",
         "dependencies": {
@@ -4788,18 +4764,6 @@
           "lib/net8.0/Microsoft.EntityFrameworkCore.SqlServer.dll": {
             "related": ".xml"
           }
-        }
-      },
-      "Microsoft.EntityFrameworkCore.Tools/8.0.6": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Design": "8.0.6"
-        },
-        "compile": {
-          "lib/net8.0/_._": {}
-        },
-        "runtime": {
-          "lib/net8.0/_._": {}
         }
       },
       "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
@@ -6266,6 +6230,40 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "BusinessLogicLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "DataAccessLayer": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/BusinessLogicLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BusinessLogicLayer.dll": {}
+        }
+      },
+      "DataAccessLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter": "8.0.6",
+          "Microsoft.AspNetCore.Http": "2.2.2",
+          "Microsoft.AspNetCore.Http.Features": "5.0.17",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.6",
+          "Microsoft.AspNetCore.Identity.UI": "8.0.4",
+          "Microsoft.EntityFrameworkCore": "8.0.6",
+          "Microsoft.EntityFrameworkCore.SqlServer": "8.0.6",
+          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "8.0.2",
+          "X.PagedList.Mvc.Core": "9.1.2"
+        },
+        "compile": {
+          "bin/placeholder/DataAccessLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DataAccessLayer.dll": {}
+        }
       }
     }
   },
@@ -8802,22 +8800,6 @@
         "microsoft.entityframeworkcore.analyzers.nuspec"
       ]
     },
-    "Microsoft.EntityFrameworkCore.Design/8.0.6": {
-      "sha512": "4OT+mH+8EB4Kfn1ENpDx2Ssx459j200gvdhDOKq5lkHmHzkRpmEDKS5GfqaLZvBLJKWu1FVGQ7Wnczcjb0hX4g==",
-      "type": "package",
-      "path": "microsoft.entityframeworkcore.design/8.0.6",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "PACKAGE.md",
-        "build/net8.0/Microsoft.EntityFrameworkCore.Design.props",
-        "lib/net8.0/Microsoft.EntityFrameworkCore.Design.dll",
-        "lib/net8.0/Microsoft.EntityFrameworkCore.Design.xml",
-        "microsoft.entityframeworkcore.design.8.0.6.nupkg.sha512",
-        "microsoft.entityframeworkcore.design.nuspec"
-      ]
-    },
     "Microsoft.EntityFrameworkCore.Relational/8.0.6": {
       "sha512": "chhfmLusCGLGvNYtvMji6KGQlduPDnJsStG/LjS8qJhFWJDDzTZpSr2LHowewcxMrMo/Axc6Jwe+WwSi/vlkTg==",
       "type": "package",
@@ -8846,32 +8828,6 @@
         "lib/net8.0/Microsoft.EntityFrameworkCore.SqlServer.xml",
         "microsoft.entityframeworkcore.sqlserver.8.0.6.nupkg.sha512",
         "microsoft.entityframeworkcore.sqlserver.nuspec"
-      ]
-    },
-    "Microsoft.EntityFrameworkCore.Tools/8.0.6": {
-      "sha512": "UsrAqShiZQBK2lcZsXoyFPccbiLRd2az1uXe1he2z4r2TUYyxNQFy+eysGCpZg0g62I4jFRJfvXIAmCi4QCUpg==",
-      "type": "package",
-      "path": "microsoft.entityframeworkcore.tools/8.0.6",
-      "hasTools": true,
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "docs/PACKAGE.md",
-        "lib/net8.0/_._",
-        "microsoft.entityframeworkcore.tools.8.0.6.nupkg.sha512",
-        "microsoft.entityframeworkcore.tools.nuspec",
-        "tools/EntityFrameworkCore.PS2.psd1",
-        "tools/EntityFrameworkCore.PS2.psm1",
-        "tools/EntityFrameworkCore.psd1",
-        "tools/EntityFrameworkCore.psm1",
-        "tools/about_EntityFrameworkCore.help.txt",
-        "tools/init.ps1",
-        "tools/net461/any/ef.exe",
-        "tools/net461/win-arm64/ef.exe",
-        "tools/net461/win-x86/ef.exe",
-        "tools/netcoreapp2.0/any/ef.dll",
-        "tools/netcoreapp2.0/any/ef.runtimeconfig.json"
       ]
     },
     "Microsoft.Extensions.Caching.Abstractions/8.0.0": {
@@ -11974,36 +11930,45 @@
         "x.pagedlist.mvc.core.9.1.2.nupkg.sha512",
         "x.pagedlist.mvc.core.nuspec"
       ]
+    },
+    "BusinessLogicLayer/1.0.0": {
+      "type": "project",
+      "path": "../BusinessLogicLayer/BusinessLogicLayer.csproj",
+      "msbuildProject": "../BusinessLogicLayer/BusinessLogicLayer.csproj"
+    },
+    "DataAccessLayer/1.0.0": {
+      "type": "project",
+      "path": "../DataAccessLayer/DataAccessLayer.csproj",
+      "msbuildProject": "../DataAccessLayer/DataAccessLayer.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter >= 8.0.6",
-      "Microsoft.AspNetCore.Http >= 2.2.2",
-      "Microsoft.AspNetCore.Http.Features >= 5.0.17",
-      "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.6",
+      "BusinessLogicLayer >= 1.0.0",
       "Microsoft.AspNetCore.Identity.UI >= 8.0.4",
-      "Microsoft.EntityFrameworkCore >= 8.0.6",
-      "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.6",
-      "Microsoft.EntityFrameworkCore.Tools >= 8.0.6",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 8.0.2",
       "X.PagedList.Mvc.Core >= 9.1.2"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\bassa\\.nuget\\packages\\": {}
+    "C:\\Users\\bassa.BASSAM\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Projects\\MyProjects\\Aflamak\\Aflamak\\Aflamak.csproj",
-      "projectName": "Aflamak",
-      "projectPath": "E:\\Projects\\MyProjects\\Aflamak\\Aflamak\\Aflamak.csproj",
-      "packagesPath": "C:\\Users\\bassa\\.nuget\\packages\\",
-      "outputPath": "E:\\Projects\\MyProjects\\Aflamak\\Aflamak\\obj\\publish\\win-x86\\",
+      "projectUniqueName": "E:\\My Projects\\Aflamak\\Aflamak\\PresentationLayer.csproj",
+      "projectName": "PresentationLayer",
+      "projectPath": "E:\\My Projects\\Aflamak\\Aflamak\\PresentationLayer.csproj",
+      "packagesPath": "C:\\Users\\bassa.BASSAM\\.nuget\\packages\\",
+      "outputPath": "E:\\My Projects\\Aflamak\\Aflamak\\obj\\publish\\win-x86\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\bassa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\bassa.BASSAM\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -12015,53 +11980,35 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\My Projects\\Aflamak\\BusinessLogicLayer\\BusinessLogicLayer.csproj": {
+              "projectPath": "E:\\My Projects\\Aflamak\\BusinessLogicLayer\\BusinessLogicLayer.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net8.0": {
+        "framework": "net8.0",
         "targetAlias": "net8.0",
         "dependencies": {
-          "Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter": {
-            "target": "Package",
-            "version": "[8.0.6, )"
-          },
-          "Microsoft.AspNetCore.Http": {
-            "target": "Package",
-            "version": "[2.2.2, )"
-          },
-          "Microsoft.AspNetCore.Http.Features": {
-            "target": "Package",
-            "version": "[5.0.17, )"
-          },
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-            "target": "Package",
-            "version": "[8.0.6, )"
-          },
           "Microsoft.AspNetCore.Identity.UI": {
             "target": "Package",
             "version": "[8.0.4, )"
-          },
-          "Microsoft.EntityFrameworkCore": {
-            "target": "Package",
-            "version": "[8.0.6, )"
-          },
-          "Microsoft.EntityFrameworkCore.SqlServer": {
-            "target": "Package",
-            "version": "[8.0.6, )"
-          },
-          "Microsoft.EntityFrameworkCore.Tools": {
-            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-            "suppressParent": "All",
-            "target": "Package",
-            "version": "[8.0.6, )"
           },
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
             "target": "Package",
@@ -12091,7 +12038,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
       }
     },
     "runtimes": {

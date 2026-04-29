@@ -1,41 +1,46 @@
-﻿using DataAccessLayer.Models.ViewModels;
+﻿using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.ViewModels;
+using System.Threading.Tasks;
 
 namespace PresentationLayer.Controllers
 {
     public class RolesController : Controller
     {
-        private readonly RoleManager<IdentityRole> roleManager;
-        public RolesController(RoleManager<IdentityRole> roleManager)
+        private readonly IRolesService _rolesService;
+
+        public RolesController(IRolesService rolesService)
         {
-            this.roleManager = roleManager;
+            _rolesService = rolesService;
         }
+
         public IActionResult Index()
         {
-            var roles = roleManager.Roles;
+            var roles = _rolesService.AllRoles();
+
             return View(roles);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Add(RoleFormVM data)
         {
             if (ModelState.IsValid)
             {
-                if (await roleManager.RoleExistsAsync(data.Name))
-                {
-                    ModelState.AddModelError("Name", "هذا الدور موجود بالفعل.");
-                    return View("Index", roleManager.Roles);
-                }
+                var result = await _rolesService.CreateRole(data.Name);
+
+                if (result.Success)
+                    return RedirectToAction("Index");
                 else
                 {
-                    await roleManager.CreateAsync(new IdentityRole(data.Name.Trim()));
-                    return RedirectToAction("Index");
+                    ModelState.AddModelError("Name", result.Error);
+                    return View("Index", _rolesService.AllRoles());
                 }
             }
             else
             {
-                return View("Index", roleManager.Roles);
+                return View("Index", _rolesService.AllRoles());
             }
         }
     }

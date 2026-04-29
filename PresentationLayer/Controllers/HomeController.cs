@@ -1,45 +1,66 @@
-﻿using DataAccessLayer.Enums;
-using DataAccessLayer.Models.ViewModels;
-using DataAccessLayer.Repository.Interfaces;
+﻿using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PresentationLayer.ViewModels;
 
 namespace PresentationLayer.Controllers
 {
     [AllowAnonymous]
     public class HomeController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public HomeController(IUnitOfWork unitOfWork)
+        private readonly IFilmsService _filmsService;
+        private readonly ITvShowsService _tvShowsService;
+        private readonly IEpisodesService _episodesService;
+        private readonly ICategoriesService _categoriesService;
+        private readonly ICountriesService _countriesService;
+        private readonly IActorsService _actorsService;
+        private readonly IProducersService _producersService;
+
+        public HomeController(ITvShowsService tvShowsService, IFilmsService filmsService, ICategoriesService categoriesService, ICountriesService countriesService, IEpisodesService episodesService, IActorsService actorsService, IProducersService producersService)
         {
-            _unitOfWork = unitOfWork;
+            _tvShowsService = tvShowsService;
+            _filmsService = filmsService;
+            _categoriesService = categoriesService;
+            _countriesService = countriesService;
+            _episodesService = episodesService;
+            _actorsService = actorsService;
+            _producersService = producersService;
         }
-        public void CreateCategoriesSelectList()
+
+        public async Task CreateCategoriesSelectList()
         {
-            var categories = _unitOfWork.Categories.GetAllWithoutPagination();
+            var categories = await _categoriesService.GetAllCategories(1, int.MaxValue);
+
             var data = categories.OrderBy(x => x.Name).ToList();
             SelectList List = new SelectList(data, "Id", "Name");
+
             ViewBag.MyBag3 = List;
         }
-        public void CreateCountriesSelectList()
+
+        public async Task CreateCountriesSelectList()
         {
-            var countries = _unitOfWork.Countries.GetAllWithoutPagination();
+            var countries = await _countriesService.GetAllCountries(1, int.MaxValue);
+
             var data = countries.OrderBy(x => x.Name).ToList();
             SelectList List = new SelectList(data, "Id", "Name");
+
             ViewBag.MyBag4 = List;
         }
+
         public IActionResult Index()
         {
-            var MostWatchedFilms = _unitOfWork.Films.MostWatchedFilms().Take(10);
-            var MostWatchedTvShows = _unitOfWork.TvShows.MostWatchedTvShows().Take(10);
-            var RecentEpisodes = _unitOfWork.Episodes.GetRecentEpisodes().Take(30);
-            var RecentFilms = _unitOfWork.Films.RecentFilms().Take(10);
-            var RecentTvShows = _unitOfWork.TvShows.RecentTvShows().Take(10);
-            var ArabicFilms = _unitOfWork.Films.ArabicFilms().Take(10);
-            var ArabicTvShows = _unitOfWork.TvShows.ArabicTvShows().Take(10);
-            var CartoonFilms = _unitOfWork.Films.CartoonFilms().Take(10);
-            var RamadanTvShows = _unitOfWork.TvShows.RamadanTvShows().Take(10);
+            var MostWatchedFilms = _filmsService.GetFilms(Keys.NoOfLikes, null, ItemType.فيلم).Take(10);
+            var MostWatchedTvShows = _tvShowsService.GetTvShows(Keys.NoOfLikes, null, ItemType.مسلسل, false).Take(10);
+            var RecentEpisodes = _episodesService.GetRecentEpisodes(1).Episodes.Take(30);
+            var RecentFilms = _filmsService.GetFilms(Keys.Year, null, ItemType.فيلم).Take(10);
+            var RecentTvShows = _tvShowsService.GetTvShows(Keys.Year, null, ItemType.مسلسل, false).Take(10);
+            var ArabicFilms = _filmsService.GetFilms(Keys.NoOfLikes, Languages.عربي, null).Take(10);
+            var ArabicTvShows = _tvShowsService.GetTvShows(null, Languages.عربي, ItemType.مسلسل, false).Take(10);
+            var CartoonFilms = _filmsService.GetFilms(Keys.NoOfLikes, null, ItemType.كرتون).Take(10);
+            var RamadanTvShows = _tvShowsService.GetTvShows(null, Languages.عربي, ItemType.مسلسل, true).Take(10);
+
             var data = new HomePageVM()
             {
                 MostWatchedFilms = MostWatchedFilms,
@@ -54,30 +75,33 @@ namespace PresentationLayer.Controllers
             };
             return View(data);
         }
-        public IActionResult Recent(int page = 1, bool isFilms = false, bool isTvShows = false)
+
+        public async Task<IActionResult> Recent(int page = 1, bool isFilms = false, bool isTvShows = false)
         {
             int pageSize = 9;
             bool flag = false;
+
             List<ItemViewModel> combinedItems = new List<ItemViewModel>();
+
             if (isFilms && !isTvShows)
             {
-                combinedItems = _unitOfWork.Films.GetRecentFilms(page)
+                combinedItems = _filmsService.GetRelatedFilmsByKey(Keys.Year)
                                .Select(f => new ItemViewModel { Type = "Film", Item = f })
                                .ToList();
                 flag = true;
             }
             else if (isTvShows && !isFilms)
             {
-                combinedItems = _unitOfWork.TvShows.GetRecentTvShows(page)
+                combinedItems = _tvShowsService.GetRelatedTvShowsByKey(Keys.Year)
                            .Select(f => new ItemViewModel { Type = "TvShow", Item = f })
                            .ToList();
                 flag = true;
             }
             else
             {
-                combinedItems = _unitOfWork.Films.GetRecentFilms(page)
+                combinedItems = _filmsService.GetRelatedFilmsByKey(Keys.Year)
                           .Select(f => new ItemViewModel { Type = "Film", Item = f })
-                          .Concat(_unitOfWork.TvShows.GetRecentTvShows(page)
+                          .Concat(_tvShowsService.GetRelatedTvShowsByKey(Keys.Year)
                           .Select(t => new ItemViewModel { Type = "TvShow", Item = t }))
                           .ToList();
             }
@@ -111,11 +135,12 @@ namespace PresentationLayer.Controllers
             SelectList enumSelectList2 = new SelectList(enumValues2, "Id", "Name");
             ViewBag.MyBag6 = enumSelectList2;
 
-            CreateCountriesSelectList();
-            CreateCategoriesSelectList();
+            await CreateCountriesSelectList();
+            await CreateCategoriesSelectList();
 
             return View(viewModel);
         }
+
         public IActionResult LoadMoreRecent(int page, string genre, string country, int? language, int? type, bool fromHome = false, bool isFilms = false, bool isTvShows = false)
         {
             int pageSize = 9;
@@ -124,7 +149,7 @@ namespace PresentationLayer.Controllers
 
             if (isTvShows && !isFilms)
             {
-                var tvshows = _unitOfWork.TvShows.GetRecentTvShows(page).AsQueryable();
+                var tvshows = _tvShowsService.GetRelatedTvShowsByKey(Keys.Year).AsQueryable();
 
                 if (!string.IsNullOrEmpty(genre))
                 {
@@ -142,13 +167,13 @@ namespace PresentationLayer.Controllers
                 {
                     tvshows = tvshows.Where(f => f.Language == language);
                 }
-                combinedItems = tvshows.Select(f => new ItemViewModel { Type = "TvShow", Item = f })
-                                .ToList();
+
+                combinedItems = tvshows.Select(f => new ItemViewModel { Type = "TvShow", Item = f }).ToList();
                 flag = true;
             }
             else if (isFilms && !isTvShows)
             {
-                var films = _unitOfWork.Films.GetRecentFilms(page).AsQueryable();
+                var films = _filmsService.GetRelatedFilmsByKey(Keys.Year).AsQueryable();
 
                 if (!string.IsNullOrEmpty(genre))
                 {
@@ -166,14 +191,14 @@ namespace PresentationLayer.Controllers
                 {
                     films = films.Where(t => t.Language == language);
                 }
-                combinedItems = films.Select(t => new ItemViewModel { Type = "Film", Item = t })
-                                .ToList();
+
+                combinedItems = films.Select(t => new ItemViewModel { Type = "Film", Item = t }).ToList();
                 flag = true;
             }
             else
             {
-                var films = _unitOfWork.Films.GetRecentFilms(page).AsQueryable();
-                var tvShows = _unitOfWork.TvShows.GetRecentTvShows(page).AsQueryable();
+                var films = _filmsService.GetRelatedFilmsByKey(Keys.Year).AsQueryable();
+                var tvShows = _tvShowsService.GetRelatedTvShowsByKey(Keys.Year).AsQueryable();
 
                 if (!string.IsNullOrEmpty(genre))
                 {
@@ -202,8 +227,7 @@ namespace PresentationLayer.Controllers
                 }
 
                 combinedItems = films.Select(f => new ItemViewModel { Type = "Film", Item = f })
-                                .Concat(tvShows.Select(t => new ItemViewModel { Type = "TvShow", Item = t }))
-                                .ToList();
+                    .Concat(tvShows.Select(t => new ItemViewModel { Type = "TvShow", Item = t })).ToList();
             }
 
             var pagedItems = combinedItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -218,30 +242,31 @@ namespace PresentationLayer.Controllers
 
             return PartialView("_Recent", viewModel);
         }
-        public IActionResult TopRated(int page = 1, bool isFilms = false, bool isTvShows = false)
+
+        public async Task<IActionResult> TopRated(int page = 1, bool isFilms = false, bool isTvShows = false)
         {
             int pageSize = 9;
             bool flag = false;
             List<ItemViewModel> combinedItems = new List<ItemViewModel>();
             if (isFilms && !isTvShows)
             {
-                combinedItems = _unitOfWork.Films.GetTopRatedFilms(page)
+                combinedItems = _filmsService.GetRelatedFilmsByKey(Keys.NoOfLikes)
                                .Select(f => new ItemViewModel { Type = "Film", Item = f })
                                .ToList();
                 flag = true;
             }
             else if (isTvShows && !isFilms)
             {
-                combinedItems = _unitOfWork.TvShows.GetTopRatedTvShows(page)
+                combinedItems = _tvShowsService.GetRelatedTvShowsByKey(Keys.NoOfLikes)
                            .Select(f => new ItemViewModel { Type = "TvShow", Item = f })
                            .ToList();
                 flag = true;
             }
             else
             {
-                combinedItems = _unitOfWork.Films.GetTopRatedFilms(page)
+                combinedItems = _filmsService.GetRelatedFilmsByKey(Keys.NoOfLikes)
                           .Select(f => new ItemViewModel { Type = "Film", Item = f })
-                          .Concat(_unitOfWork.TvShows.GetTopRatedTvShows(page)
+                          .Concat(_tvShowsService.GetRelatedTvShowsByKey(Keys.NoOfLikes)
                           .Select(t => new ItemViewModel { Type = "TvShow", Item = t }))
                           .ToList();
             }
@@ -266,20 +291,23 @@ namespace PresentationLayer.Controllers
                    .Select(e => new { Id = (int)e, Name = e.ToString() })
                    .ToList();
             SelectList enumSelectList1 = new SelectList(enumValues1, "Id", "Name");
+
             ViewBag.MyBag5 = enumSelectList1;
 
             var enumValues2 = Enum.GetValues(typeof(ItemType))
-            .Cast<ItemType>()
-            .Select(e => new { Id = (int)e, Name = e.ToString() })
-            .ToList();
+                .Cast<ItemType>()
+                .Select(e => new { Id = (int)e, Name = e.ToString() })
+                .ToList();
             SelectList enumSelectList2 = new SelectList(enumValues2, "Id", "Name");
+
             ViewBag.MyBag6 = enumSelectList2;
 
-            CreateCountriesSelectList();
-            CreateCategoriesSelectList();
+            await CreateCountriesSelectList();
+            await CreateCategoriesSelectList();
 
             return View(viewModel);
         }
+
         public IActionResult LoadMoreTopRated(int page, string genre, string country, int? language, int? type, bool fromHome = false, bool isFilms = false, bool isTvShows = false)
         {
             int pageSize = 9;
@@ -288,7 +316,7 @@ namespace PresentationLayer.Controllers
 
             if (isTvShows && !isFilms)
             {
-                var tvshows = _unitOfWork.TvShows.GetTopRatedTvShows(page).AsQueryable();
+                var tvshows = _tvShowsService.GetRelatedTvShowsByKey(Keys.NoOfLikes).AsQueryable();
 
                 if (!string.IsNullOrEmpty(genre))
                 {
@@ -306,13 +334,13 @@ namespace PresentationLayer.Controllers
                 {
                     tvshows = tvshows.Where(f => f.Language == language);
                 }
-                combinedItems = tvshows.Select(f => new ItemViewModel { Type = "TvShow", Item = f })
-                                .ToList();
+
+                combinedItems = tvshows.Select(f => new ItemViewModel { Type = "TvShow", Item = f }).ToList();
                 flag = true;
             }
             else if (isFilms && !isTvShows)
             {
-                var films = _unitOfWork.Films.GetTopRatedFilms(page).AsQueryable();
+                var films = _filmsService.GetRelatedFilmsByKey(Keys.NoOfLikes).AsQueryable();
 
                 if (!string.IsNullOrEmpty(genre))
                 {
@@ -330,14 +358,14 @@ namespace PresentationLayer.Controllers
                 {
                     films = films.Where(t => t.Language == language);
                 }
-                combinedItems = films.Select(t => new ItemViewModel { Type = "Film", Item = t })
-                                .ToList();
+
+                combinedItems = films.Select(t => new ItemViewModel { Type = "Film", Item = t }).ToList();
                 flag = true;
             }
             else
             {
-                var films = _unitOfWork.Films.GetTopRatedFilms(page).AsQueryable();
-                var tvShows = _unitOfWork.TvShows.GetTopRatedTvShows(page).AsQueryable();
+                var films = _filmsService.GetRelatedFilmsByKey(Keys.NoOfLikes).AsQueryable();
+                var tvShows = _tvShowsService.GetRelatedTvShowsByKey(Keys.NoOfLikes).AsQueryable();
 
                 if (!string.IsNullOrEmpty(genre))
                 {
@@ -366,8 +394,7 @@ namespace PresentationLayer.Controllers
                 }
 
                 combinedItems = films.Select(f => new ItemViewModel { Type = "Film", Item = f })
-                                .Concat(tvShows.Select(t => new ItemViewModel { Type = "TvShow", Item = t }))
-                                .ToList();
+                    .Concat(tvShows.Select(t => new ItemViewModel { Type = "TvShow", Item = t })).ToList();
             }
 
             var pagedItems = combinedItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -382,15 +409,16 @@ namespace PresentationLayer.Controllers
 
             return PartialView("_TopRated", viewModel);
         }
+
         public IActionResult Filter(string searchString)
         {
-            var producers = _unitOfWork.Producers.GetProducersForSearch(searchString);
+            var producers = _producersService.GetProducersForSearch(searchString);
 
-            var actors = _unitOfWork.Actors.GetActorsForSearch(searchString);
+            var actors = _actorsService.GetActorsForSearch(searchString);
 
-            var films = _unitOfWork.Films.GetFilmsForSearch(searchString);
+            var films = _filmsService.GetFilmsForSearch(searchString);
 
-            var tvshows = _unitOfWork.TvShows.GetTvShowsForSearch(searchString);
+            var tvshows = _tvShowsService.GetTvShowsForSearch(searchString);
 
             var viewModel = new SearchVM()
             {

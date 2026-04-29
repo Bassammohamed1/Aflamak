@@ -1,72 +1,63 @@
-﻿using DataAccessLayer.Models.ViewModels;
-using Microsoft.AspNetCore.Identity;
+﻿using BusinessLogicLayer.DTOs;
+using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using PresentationLayer.ViewModels;
 
 namespace PresentationLayer.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
-        public UsersController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+
+        private readonly IUsersService _usersService;
+
+        public UsersController(IUsersService usersService)
         {
-            this.userManager = userManager;
-            this.roleManager = roleManager;
+            _usersService = usersService;
         }
+
         public async Task<IActionResult> Index()
         {
-            var users = await userManager.Users.Select(u => new UsersVM
-            {
-                Id = u.Id,
-                UserName = u.UserName,
-                Email = u.Email,
-                Roles = userManager.GetRolesAsync(u).Result
+            var users = _usersService.AllUsers();
 
-            }).ToListAsync();
             return View(users);
         }
+
         public async Task<IActionResult> ManageRoles(string userId)
         {
             if (userId == null)
-                return NotFound("Invalid UserId");
+                return NotFound("Invalid userID");
 
-            var user = await userManager.FindByIdAsync(userId);
-            var roles = await roleManager.Roles.ToListAsync();
+            var result = await _usersService.GetAllRolesWithUserSelectedRoles(userId);
 
             var viewModel = new UserRolesVM()
             {
-                UserId = user.Id,
-                UserName = user.UserName,
-                Roles = roles.Select(r => new RolesVM
+                UserId = result.UserId,
+                UserName = result.UserName,
+                Roles = result.Roles.Select(r => new RolesVM
                 {
                     Name = r.Name,
-                    IsSelected = userManager.IsInRoleAsync(user, r.Name).Result
+                    IsSelected = r.IsSelected
                 }).ToList()
             };
 
             return View(viewModel);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> ManageRoles(UserRolesVM data)
         {
-            var user = await userManager.FindByIdAsync(data.UserId);
-            if (user == null)
-                return NotFound();
-
-            var userRoles = await userManager.GetRolesAsync(user);
-
-            foreach (var role in data.Roles)
+            var dto = new UserRolesDTO()
             {
-                if (userRoles.Any(r => r == role.Name) && !role.IsSelected)
-                    await userManager.RemoveFromRoleAsync(user, role.Name);
+                UserId = data.UserId,
+                UserName = data.UserName,
+                Roles = data.Roles.Select(r => new RolesDTO() { Name = r.Name, IsSelected = r.IsSelected }).ToList()
+            };
 
-                if (!userRoles.Any(r => r == role.Name) && role.IsSelected)
-                    await userManager.AddToRoleAsync(user, role.Name);
-            }
+            var result = await _usersService.ManageRoles(dto);
 
-            return RedirectToAction(nameof(Index));
+            return result.Success ? RedirectToAction(nameof(Index)) : View(data);
+
         }
     }
 }

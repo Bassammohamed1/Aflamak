@@ -4,6 +4,8 @@ using DataAccessLayer.Data;
 using DataAccessLayer.Repository;
 using DataAccessLayer.Repository.Interfaces;
 using BusinessLogicLayer.Seeds;
+using BusinessLogicLayer.Services.Interfaces;
+using BusinessLogicLayer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,17 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IActorsService, ActorsService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+builder.Services.AddScoped<ICountriesService, CountriesService>();
+builder.Services.AddScoped<IEpisodesService, EpisodesService>();
+builder.Services.AddScoped<IFilmsService, FilmsService>();
+builder.Services.AddScoped<IPartsService, PartsService>();
+builder.Services.AddScoped<IProducersService, ProducersService>();
+builder.Services.AddScoped<ITvShowsService, TvShowsService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
 
 var app = builder.Build();
 

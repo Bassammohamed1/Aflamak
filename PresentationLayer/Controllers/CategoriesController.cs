@@ -1,5 +1,5 @@
-﻿using DataAccessLayer.Models;
-using DataAccessLayer.Repository.Interfaces;
+﻿using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,77 +8,96 @@ namespace PresentationLayer.Controllers
     [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
-        private IUnitOfWork _unitOfWork;
-        public CategoriesController(IUnitOfWork unitOfWork)
+        private readonly ICategoriesService _categoriesService;
+
+        public CategoriesController(ICategoriesService categoriesService)
         {
-            _unitOfWork = unitOfWork;
+            _categoriesService = categoriesService;
         }
-        public IActionResult Index(int? page)
+
+        public async Task<IActionResult> Index(int? page)
         {
             int pageSize = 10;
             int pageNumber = page ?? 1;
-            IEnumerable<Category> result = _unitOfWork.Categories.GetAll(pageNumber, pageSize);
+
+            IEnumerable<Category> result = await _categoriesService.GetAllCategories(pageNumber, pageSize);
+
             return View(result);
         }
+
         public IActionResult Add()
         {
             return View();
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Add(Category data)
+        public async Task<IActionResult> Add(Category data)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Categories.Add(data);
-                _unitOfWork.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                var result = await _categoriesService.AddCategory(data);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(data);
             }
             else
             {
                 return View(data);
             }
         }
-        public IActionResult Update(int Id)
+
+        public async Task<IActionResult> Update(int Id)
         {
             if (Id == null || Id == 0)
                 return NotFound();
-            var data = _unitOfWork.Categories.GetById(Id);
+
+            var data = await _categoriesService.GetCategoryByID(Id);
+
             if (data == null)
                 return NotFound();
+
             return View(data);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(Category data)
+        public async Task<IActionResult> Update(Category data)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Categories.Update(data);
-                _unitOfWork.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                var result = await _categoriesService.UpdateCategory(data);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(data);
             }
             else
             {
                 return View(data);
             }
         }
-        public IActionResult Delete(int Id)
+
+        public async Task<IActionResult> Delete(int Id)
         {
             if (Id == null || Id == 0)
                 return NotFound();
-            var data = _unitOfWork.Categories.GetById(Id);
+
+            var data = await _categoriesService.GetCategoryByID(Id);
+
             if (data == null)
                 return NotFound();
+
             return View(data);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Delete(Category data)
+        public async Task<IActionResult> Delete(Category data)
         {
-            _unitOfWork.Categories.Delete(data);
-            _unitOfWork.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            var result = await _categoriesService.DeleteCategory(data);
+
+            return result.Success ? RedirectToAction(nameof(Index)) :
+                View(data);
         }
     }
 }

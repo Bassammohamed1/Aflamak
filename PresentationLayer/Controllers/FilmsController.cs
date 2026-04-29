@@ -1,52 +1,52 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using X.PagedList;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using DataAccessLayer.Repository.Interfaces;
-using DataAccessLayer.Models;
-using DataAccessLayer.Models.ViewModels;
+﻿using BusinessLogicLayer.DTOs;
+using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Enums;
+using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PresentationLayer.ViewModels;
+using System.Security.Claims;
+using X.PagedList;
 
 namespace PresentationLayer.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class FilmsController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public FilmsController(IUnitOfWork unitOfWork)
+        private readonly IFilmsService _filmsService;
+
+        public FilmsController(IFilmsService filmsService)
         {
-            _unitOfWork = unitOfWork;
+            _filmsService = filmsService;
         }
-        public void CreateProducersSelectList()
+
+        private async Task CreateNeededSelectLists()
         {
-            var producers = _unitOfWork.Producers.GetAllWithoutPagination();
-            var data = producers.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag1 = List;
+            var allNeededData = await _filmsService.GetFilmDataForSelectLists();
+
+            var actors = allNeededData.Actors;
+            var producers = allNeededData.Producers;
+            var categories = allNeededData.Categories;
+            var countries = allNeededData.Countries;
+
+            actors = actors.OrderBy(x => x.Name).ToList();
+            producers = producers.OrderBy(x => x.Name).ToList();
+            categories = categories.OrderBy(x => x.Name).ToList();
+            countries = countries.OrderBy(x => x.Name).ToList();
+
+            SelectList actorsList = new SelectList(actors, "Id", "Name");
+            SelectList producersList = new SelectList(producers, "Id", "Name");
+            SelectList categoriesList = new SelectList(categories, "Id", "Name");
+            SelectList countriesList = new SelectList(countries, "Id", "Name");
+
+            ViewBag.MyBag1 = actorsList;
+            ViewBag.MyBag2 = producersList;
+            ViewBag.MyBag3 = categoriesList;
+            ViewBag.MyBag4 = countriesList;
         }
-        public void CreateActorsSelectList()
-        {
-            var actors = _unitOfWork.Actors.GetAllWithoutPagination();
-            var data = actors.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag2 = List;
-        }
-        public void CreateCategoriesSelectList()
-        {
-            var categories = _unitOfWork.Categories.GetAllWithoutPagination();
-            var data = categories.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag3 = List;
-        }
-        public void CreateCountriesSelectList()
-        {
-            var countries = _unitOfWork.Countries.GetAllWithoutPagination();
-            var data = countries.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag4 = List;
-        }
-        public IActionResult Index(int? page, bool sortLikes = false, bool sortDate = false)
+
+        public async Task<IActionResult> Index(int? page, bool sortLikes = false, bool sortDate = false)
         {
             int pageSize = 10;
             int pageNumber = page ?? 1;
@@ -54,15 +54,15 @@ namespace PresentationLayer.Controllers
 
             if (!sortDate && !sortLikes)
             {
-                result = _unitOfWork.Films.GetAllFilms(pageNumber, pageSize);
+                result = await _filmsService.GetAllFilms(pageNumber, pageSize);
             }
             else if (sortLikes && !sortDate)
             {
-                result = _unitOfWork.Films.GetAllFilmsOrderedByLikes(pageNumber, pageSize);
+                result = await _filmsService.GetAllFilmsOrderedByKey(pageNumber, pageSize, Keys.NoOfLikes);
             }
             else
             {
-                result = _unitOfWork.Films.GetAllFilmsOrderedByDate(pageNumber, pageSize);
+                result = await _filmsService.GetAllFilmsOrderedByKey(pageNumber, pageSize, Keys.Year);
             }
 
             ViewBag.SortLikes = sortLikes;
@@ -71,39 +71,37 @@ namespace PresentationLayer.Controllers
 
             return View(result);
         }
-        public IActionResult Add()
+
+        public async Task<IActionResult> Add()
         {
-            CreateProducersSelectList();
-            CreateActorsSelectList();
-            CreateCategoriesSelectList();
-            CreateCountriesSelectList();
+            await this.CreateNeededSelectLists();
+
             return View();
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Add(FilmViewModel movie)
+        public async Task<IActionResult> Add(FilmDTO film)
         {
             if (ModelState.IsValid)
             {
-                if (movie.clientFile != null)
-                {
-                    var stream = new MemoryStream();
-                    movie.clientFile.CopyTo(stream);
-                    movie.dbImage = stream.ToArray();
-                }
-                _unitOfWork.Films.AddFilm(movie);
-                return RedirectToAction(nameof(Index));
+                var result = await _filmsService.AddFilm(film);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(film);
             }
             else
             {
-                return View(movie);
+                return View(film);
             }
         }
-        public IActionResult Update(int Id)
+
+        public async Task<IActionResult> Update(int Id)
         {
             if (Id == null || Id == 0)
                 return NotFound();
-            var movie = _unitOfWork.Films.GetFilmById(Id);
+
+            var movie = await _filmsService.GetFilmByID(Id);
 
             int languageId = movie.Language.Value;
             Languages languageEnum = (Languages)languageId;
@@ -113,6 +111,7 @@ namespace PresentationLayer.Controllers
 
             if (movie == null)
                 return NotFound();
+
             var result = new FilmViewModel()
             {
                 Id = movie.Id,
@@ -132,117 +131,93 @@ namespace PresentationLayer.Controllers
                 CategoryId = movie.CategoryId,
                 ActorsId = movie.ActorFilms.Select(a => a.ActorId).ToList()
             };
-            CreateProducersSelectList();
-            CreateActorsSelectList();
-            CreateCategoriesSelectList();
-            CreateCountriesSelectList();
+
+            await this.CreateNeededSelectLists();
+
             return View(result);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(FilmViewModel movie)
+        public async Task<IActionResult> Update(FilmDTO film)
         {
             if (ModelState.IsValid)
             {
-                var data = _unitOfWork.Films.GetById(movie.Id);
-                if (data.clientFile != movie.clientFile)
-                {
-                    var stream = new MemoryStream();
-                    movie.clientFile.CopyTo(stream);
-                    movie.dbImage = stream.ToArray();
-                }
-                _unitOfWork.Films.UpdateFilm(movie);
-                return RedirectToAction(nameof(Index));
+                var result = await _filmsService.UpdateFilm(film);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(film);
             }
             else
             {
-                return View(movie);
+                return View(film);
             }
         }
-        public IActionResult Delete(int Id)
+
+        public async Task<IActionResult> Delete(int Id)
         {
 
             if (Id == null || Id == 0)
                 return NotFound();
-            var movie = _unitOfWork.Films.GetById(Id);
+
+            var movie = await _filmsService.GetFilmByID(Id);
+
             if (movie == null)
                 return NotFound();
+
             return View(movie);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Delete(Film movie)
+        public IActionResult Delete(Film film)
         {
-            _unitOfWork.Films.Delete(movie);
-            _unitOfWork.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            var result = _filmsService.DeleteFilm(film);
+
+            return result.Success ? RedirectToAction(nameof(Index)) :
+                View(film);
         }
+
         [AllowAnonymous]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null || id == 0)
                 return NotFound();
 
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                var interaction = _unitOfWork.Interactions.GetAllWithoutPagination().FirstOrDefault(fi => fi.ItemId == id && fi.UserId == userId);
+                var film = await _filmsService.FilmDetails(id, true, userID);
 
-                var film = _unitOfWork.Films.GetFilmById(id);
-                if (film == null)
-                    return NotFound();
-
-                var films = _unitOfWork.Films.GetFilms().ToList();
-                films = films.Where(f => f.Root != null && f.Root == film.Root || f.Producer.Id == film.ProducerId && f.Type == film.Type || f.CategoryId == film.CategoryId && f.Type == film.Type).Take(10).ToList();
-
-                if (interaction is not null)
+                var data = new FilmDetailsVM()
                 {
-                    var viewModel = new FilmDetailsVM()
-                    {
-                        Film = film,
-                        RelatedFilms = films,
-                        HasUserLiked = interaction.IsLiked,
-                        HasUserDisliked = interaction.IsDisLiked
-                    };
+                    Film = film.Film,
+                    HasUserDisliked = film.HasUserDisliked,
+                    HasUserLiked = film.HasUserLiked,
+                    RelatedFilms = film.RelatedFilms
+                };
 
-                    return View(viewModel);
-                }
-                else
-                {
-                    var viewModel = new FilmDetailsVM()
-                    {
-                        Film = film,
-                        RelatedFilms = films,
-                        HasUserLiked = false,
-                        HasUserDisliked = false
-                    };
-
-                    return View(viewModel);
-                }
+                return View(data);
             }
             else
             {
-                var film = _unitOfWork.Films.GetFilmById(id);
-                if (film == null)
-                    return NotFound();
+                var film = await _filmsService.FilmDetails(id, false, null);
 
-                var films = _unitOfWork.Films.GetFilms().ToList();
-                films = films.Where(f => f.Root != null && f.Root == film.Root || f.Producer.Id == film.ProducerId && f.Type == film.Type || f.CategoryId == film.CategoryId && f.Type == film.Type).Take(10).ToList();
-
-                var viewModel = new FilmDetailsVM()
+                var data = new FilmDetailsVM()
                 {
-                    Film = film,
-                    RelatedFilms = films,
-                    HasUserLiked = false,
-                    HasUserDisliked = false
+                    Film = film.Film,
+                    HasUserDisliked = film.HasUserDisliked,
+                    HasUserLiked = film.HasUserLiked,
+                    RelatedFilms = film.RelatedFilms
                 };
 
-                return View(viewModel);
+                return View(data);
             }
         }
+
         [AllowAnonymous]
-        public IActionResult FilmsList(int page = 1, bool isArabic = false, bool isCartoon = false)
+        public async Task<IActionResult> FilmsList(int page = 1, bool isArabic = false, bool isCartoon = false)
         {
             int pageSize = 9;
             bool flag = false;
@@ -250,17 +225,17 @@ namespace PresentationLayer.Controllers
 
             if (isArabic && !isCartoon)
             {
-                films = _unitOfWork.Films.ArabicFilms().ToList();
+                films = _filmsService.GetFilms(null, Languages.عربي, null).ToList();
                 flag = true;
             }
             else if (isCartoon && !isArabic)
             {
-                films = _unitOfWork.Films.CartoonFilms().ToList();
+                films = _filmsService.GetFilms(null, null, ItemType.كرتون).ToList();
                 flag = true;
             }
             else
             {
-                films = _unitOfWork.Films.GetFilms().ToList();
+                films = _filmsService.GetFilms(null, null, null).ToList();
             }
 
             int totalItems = films.Count;
@@ -278,26 +253,28 @@ namespace PresentationLayer.Controllers
             };
 
             var enumValues = Enum.GetValues(typeof(Languages))
-                        .Cast<Languages>()
-                        .Select(e => new { Id = (int)e, Name = e.ToString() })
-                        .ToList();
+                .Cast<Languages>().Select(e => new { Id = (int)e, Name = e.ToString() }).ToList();
+
             SelectList enumSelectList = new SelectList(enumValues, "Id", "Name");
             ViewBag.MyBag5 = enumSelectList;
 
-            CreateCountriesSelectList();
-            CreateCategoriesSelectList();
+            await this.CreateNeededSelectLists();
 
-            List<int> dates = new List<int>();
+            List<int> datesList = new List<int>();
+
             for (int i = 1950; i <= DateTime.Now.Year; i++)
             {
-                dates.Add(i);
+                datesList.Add(i);
             }
-            var Dates = dates.OrderByDescending(x => x)
+
+            var dates = datesList.OrderByDescending(x => x)
                 .Select(n => new { Value = n, Text = n.ToString() }).ToList();
-            ViewBag.MyBag6 = Dates;
+
+            ViewBag.MyBag6 = dates;
 
             return View(viewModel);
         }
+
         [AllowAnonymous]
         public IActionResult LoadMoreFilms(int page, string genre, string country, int? language, int? year, bool fromHome = false, bool isArabic = false, bool isCartoon = false)
         {
@@ -307,17 +284,17 @@ namespace PresentationLayer.Controllers
 
             if (isArabic && !isCartoon)
             {
-                combinedItems = _unitOfWork.Films.GetFilteredFilms(genre, country, language, year, true, false).ToList();
+                combinedItems = _filmsService.GetFilteredFilms(genre, country, language, year, true, false).ToList();
                 flag = true;
             }
             else if (isCartoon && !isArabic)
             {
-                combinedItems = _unitOfWork.Films.GetFilteredFilms(genre, country, language, year, false, true).ToList();
+                combinedItems = _filmsService.GetFilteredFilms(genre, country, language, year, false, true).ToList();
                 flag = true;
             }
             else
             {
-                combinedItems = _unitOfWork.Films.GetFilteredFilms(genre, country, language, year).ToList();
+                combinedItems = _filmsService.GetFilteredFilms(genre, country, language, year).ToList();
             }
 
             var pagedItems = combinedItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -332,117 +309,38 @@ namespace PresentationLayer.Controllers
 
             return PartialView("_FilmItems", viewModel);
         }
-        [AllowAnonymous]
-        public IActionResult LikeFilm(int filmId)
-        {
-            Film film = new Film();
 
+        [AllowAnonymous]
+        public async Task<IActionResult> LikeFilm(int filmId)
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var interaction = _unitOfWork.Interactions.GetAllWithoutPagination()
-                .FirstOrDefault(fi => fi.ItemId == filmId && fi.UserId == userId);
-
-            if (interaction == null)
-            {
-                interaction = new Interaction
-                {
-                    UserId = userId,
-                    ItemId = filmId,
-                    IsLiked = true,
-                    IsDisLiked = false
-                };
-                _unitOfWork.Interactions.Add(interaction);
-
-                film = _unitOfWork.Films.GetById(filmId);
-                film.NoOfLikes += 1;
-            }
-            else if (interaction.IsDisLiked)
-            {
-                interaction.IsLiked = true;
-                interaction.IsDisLiked = false;
-
-                film = _unitOfWork.Films.GetById(filmId);
-                film.NoOfLikes += 1;
-                film.NoOfDisLikes -= 1;
-            }
-            else if(interaction.IsLiked)
-            {
-                interaction.IsLiked = false;
-
-                film = _unitOfWork.Films.GetById(filmId);
-                film.NoOfLikes -= 1;
-
-                _unitOfWork.Interactions.Delete(interaction);
-            }
-            _unitOfWork.SaveChanges();
-
-            var films = _unitOfWork.Films.GetFilms().ToList();
-            films = films.Where(f => f.Root != null && f.Root == film.Root || f.Producer.Id == film.ProducerId && f.Type == film.Type || f.CategoryId == film.CategoryId && f.Type == film.Type).Take(10).ToList();
+            var result = await _filmsService.LikeFilm(filmId, userId);
 
             var viewModel = new FilmDetailsVM()
             {
-                Film = film,
-                RelatedFilms = films,
-                HasUserLiked = interaction.IsLiked,
-                HasUserDisliked = interaction.IsDisLiked
+                Film = result.Film,
+                RelatedFilms = result.RelatedFilms,
+                HasUserLiked = result.HasUserLiked,
+                HasUserDisliked = result.HasUserDisliked
             };
 
             return View("Details", viewModel);
         }
-        [AllowAnonymous]
-        public IActionResult DislikeFilm(int filmId)
-        {
-            Film film = new Film();
 
+        [AllowAnonymous]
+        public async Task<IActionResult> DislikeFilm(int filmId)
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var interaction = _unitOfWork.Interactions.GetAllWithoutPagination()
-                .FirstOrDefault(fi => fi.ItemId == filmId && fi.UserId == userId);
-
-            if (interaction == null)
-            {
-                interaction = new Interaction
-                {
-                    UserId = userId,
-                    ItemId = filmId,
-                    IsLiked = false,
-                    IsDisLiked = true
-                };
-                _unitOfWork.Interactions.Add(interaction);
-
-                film = _unitOfWork.Films.GetById(filmId);
-                film.NoOfDisLikes += 1;
-            }
-            else if (interaction.IsLiked)
-            {
-                interaction.IsLiked = false;
-                interaction.IsDisLiked = true;
-
-                film = _unitOfWork.Films.GetById(filmId);
-                film.NoOfDisLikes += 1;
-                film.NoOfLikes -= 1;
-            }
-            else if (interaction.IsDisLiked)
-            {
-                interaction.IsDisLiked = false;
-
-                film = _unitOfWork.Films.GetById(filmId);
-                film.NoOfDisLikes -= 1;
-
-                _unitOfWork.Interactions.Delete(interaction);
-            }
-
-            _unitOfWork.SaveChanges();
-
-            var films = _unitOfWork.Films.GetFilms().ToList();
-            films = films.Where(f => f.Root != null && f.Root == film.Root || f.Producer.Id == film.ProducerId && f.Type == film.Type || f.CategoryId == film.CategoryId && f.Type == film.Type).Take(10).ToList();
+            var result = await _filmsService.DisLikeFilm(filmId, userId);
 
             var viewModel = new FilmDetailsVM()
             {
-                Film = film,
-                RelatedFilms = films,
-                HasUserLiked = interaction.IsLiked,
-                HasUserDisliked = interaction.IsDisLiked
+                Film = result.Film,
+                RelatedFilms = result.RelatedFilms,
+                HasUserLiked = result.HasUserLiked,
+                HasUserDisliked = result.HasUserDisliked
             };
 
             return View("Details", viewModel);

@@ -1,4 +1,4 @@
-﻿using Aflamak.Data;
+﻿using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AflamakTests

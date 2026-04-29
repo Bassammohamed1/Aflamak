@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using DataAccessLayer.Repository.Interfaces;
-using DataAccessLayer.Models;
-using DataAccessLayer.Models.ViewModels;
+﻿using BusinessLogicLayer.DTOs;
+using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Enums;
+using DataAccessLayer.Models;
+using DataAccessLayer.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PresentationLayer.ViewModels;
+using System.Security.Claims;
 
 namespace PresentationLayer.Controllers
 {
@@ -13,39 +15,40 @@ namespace PresentationLayer.Controllers
     public class TvShowsController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public TvShowsController(IUnitOfWork unitOfWork)
+        private readonly ITvShowsService _tvShowsService;
+
+        public TvShowsController(IUnitOfWork unitOfWork, ITvShowsService tvShowsService)
         {
             _unitOfWork = unitOfWork;
+            _tvShowsService = tvShowsService;
         }
-        public void CreateProducersSelectList()
+
+        private async Task CreateNeededSelectLists()
         {
-            var producers = _unitOfWork.Producers.GetAllWithoutPagination();
-            var data = producers.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag1 = List;
+            var allNeededData = await _tvShowsService.GetTvShowDataForSelectLists();
+
+            var actors = allNeededData.Actors;
+            var producers = allNeededData.Producers;
+            var categories = allNeededData.Categories;
+            var countries = allNeededData.Countries;
+
+            actors = actors.OrderBy(x => x.Name).ToList();
+            producers = producers.OrderBy(x => x.Name).ToList();
+            categories = categories.OrderBy(x => x.Name).ToList();
+            countries = countries.OrderBy(x => x.Name).ToList();
+
+            SelectList actorsList = new SelectList(actors, "Id", "Name");
+            SelectList producersList = new SelectList(producers, "Id", "Name");
+            SelectList categoriesList = new SelectList(categories, "Id", "Name");
+            SelectList countriesList = new SelectList(countries, "Id", "Name");
+
+            ViewBag.MyBag1 = actorsList;
+            ViewBag.MyBag2 = producersList;
+            ViewBag.MyBag3 = categoriesList;
+            ViewBag.MyBag4 = countriesList;
         }
-        public void CreateActorsSelectList()
-        {
-            var actors = _unitOfWork.Actors.GetAllWithoutPagination();
-            var data = actors.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag2 = List;
-        }
-        public void CreateCategoriesSelectList()
-        {
-            var categories = _unitOfWork.Categories.GetAllWithoutPagination();
-            var data = categories.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag3 = List;
-        }
-        public void CreateCountriesSelectList()
-        {
-            var countries = _unitOfWork.Countries.GetAllWithoutPagination();
-            var data = countries.OrderBy(x => x.Name).ToList();
-            SelectList List = new SelectList(data, "Id", "Name");
-            ViewBag.MyBag4 = List;
-        }
-        public IActionResult Index(int? page, bool sortLikes = false, bool sortDate = false)
+
+        public async Task<IActionResult> Index(int? page, bool sortLikes = false, bool sortDate = false)
         {
             int pageSize = 10;
             int pageNumber = page ?? 1;
@@ -53,226 +56,194 @@ namespace PresentationLayer.Controllers
 
             if (!sortDate && !sortLikes)
             {
-                result = _unitOfWork.TvShows.GetAllTvShows(pageNumber, pageSize);
+                result = await _tvShowsService.GetAllTvShows(pageNumber, pageSize);
             }
             else if (sortLikes && !sortDate)
             {
-                result = _unitOfWork.TvShows.GetAllTvShowsOrderedByLikes(pageNumber, pageSize);
+                result = await _tvShowsService.GetAllTvShowsOrderedByKey(pageNumber, pageSize, Keys.NoOfLikes);
             }
             else
             {
-                result = _unitOfWork.TvShows.GetAllTvShowsOrderedByDate(pageNumber, pageSize);
+                result = await _tvShowsService.GetAllTvShowsOrderedByKey(pageNumber, pageSize, Keys.Year);
             }
 
             ViewBag.SortLikes = sortLikes;
             ViewBag.SortDate = sortDate;
+            ViewBag.SortLanguage = sortDate;
 
             return View(result);
         }
-        public IActionResult Add()
+
+        public async Task<IActionResult> Add()
         {
-            CreateProducersSelectList();
-            CreateActorsSelectList();
-            CreateCategoriesSelectList();
-            CreateCountriesSelectList();
+            await this.CreateNeededSelectLists();
+
             return View();
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Add(TvShowViewModel TvShow)
+        public async Task<IActionResult> Add(TvShowDTO TvShow)
         {
             if (ModelState.IsValid)
             {
-                if (TvShow.clientFile != null)
-                {
-                    var stream = new MemoryStream();
-                    TvShow.clientFile.CopyTo(stream);
-                    TvShow.dbImage = stream.ToArray();
-                }
-                _unitOfWork.TvShows.AddTvShow(TvShow);
-                return RedirectToAction(nameof(Index));
+                var result = await _tvShowsService.AddTvShow(TvShow);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(TvShow);
             }
             else
             {
                 return View(TvShow);
             }
         }
-        public IActionResult Update(int Id)
+
+        public async Task<IActionResult> Update(int Id)
         {
             if (Id == null || Id == 0)
                 return NotFound();
 
-            var TvShow = _unitOfWork.TvShows.GetTvShowById(Id);
+            var tvShow = await _tvShowsService.GetTvShowByID(Id);
 
-            int languageId = (int)TvShow.Language.Value;
+            int languageId = tvShow.Language.Value;
             Languages languageEnum = (Languages)languageId;
 
-            int typeId = TvShow.Type.Value;
+            int typeId = tvShow.Type.Value;
             ItemType typeEnum = (ItemType)typeId;
 
-            if (TvShow == null)
+            if (tvShow == null)
                 return NotFound();
 
             var result = new TvShowViewModel()
             {
-                Id = TvShow.Id,
-                Name = TvShow.Name,
-                Description = TvShow.Description,
-                dbImage = TvShow.dbImage,
-                IsSeries = TvShow.IsSeries,
-                PartsNo = TvShow.PartsNo,
-                NoOfLikes = TvShow.NoOfLikes,
-                NoOfDisLikes = TvShow.NoOfDisLikes,
-                Year = TvShow.Year,
-                Month = TvShow.Month,
+                Id = tvShow.Id,
+                Name = tvShow.Name,
+                Description = tvShow.Description,
+                dbImage = tvShow.dbImage,
+                IsSeries = tvShow.IsSeries,
+                PartsNo = tvShow.PartsNo,
+                NoOfLikes = tvShow.NoOfLikes,
+                NoOfDisLikes = tvShow.NoOfDisLikes,
+                Year = tvShow.Year,
+                Month = tvShow.Month,
                 Type = typeEnum,
                 Language = languageEnum,
-                CountryId = TvShow.CountryId,
-                ProducerId = TvShow.ProducerId,
-                CategoryId = TvShow.CategoryId,
-                ActorsId = TvShow.ActorTvShows.Select(a => a.ActorId).ToList()
+                CountryId = tvShow.CountryId,
+                ProducerId = tvShow.ProducerId,
+                CategoryId = tvShow.CategoryId,
+                ActorsId = tvShow.ActorTvShows.Select(a => a.ActorId).ToList()
             };
-            CreateProducersSelectList();
-            CreateActorsSelectList();
-            CreateCategoriesSelectList();
-            CreateCountriesSelectList();
+
+            await this.CreateNeededSelectLists();
+
             return View(result);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(TvShowViewModel TvShow)
+        public async Task<IActionResult> Update(TvShowDTO TvShow)
         {
             if (ModelState.IsValid)
             {
-                var data = _unitOfWork.TvShows.GetById(TvShow.Id);
-                if (data.clientFile != TvShow.clientFile)
-                {
-                    var stream = new MemoryStream();
-                    TvShow.clientFile.CopyTo(stream);
-                    TvShow.dbImage = stream.ToArray();
-                }
-                _unitOfWork.TvShows.UpdateTvShow(TvShow);
-                return RedirectToAction(nameof(Index));
+                var result = await _tvShowsService.UpdateTvShow(TvShow);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(TvShow);
             }
             else
             {
                 return View(TvShow);
             }
         }
-        public IActionResult Delete(int Id)
+
+        public async Task<IActionResult> Delete(int Id)
         {
 
             if (Id == null || Id == 0)
                 return NotFound();
-            var TvShow = _unitOfWork.TvShows.GetById(Id);
-            if (TvShow == null)
+
+            var tvShow = await _tvShowsService.GetTvShowByID(Id);
+
+            if (tvShow == null)
                 return NotFound();
-            return View(TvShow);
+
+            return View(tvShow);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         public IActionResult Delete(TvShow TvShow)
         {
-            _unitOfWork.TvShows.Delete(TvShow);
-            _unitOfWork.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            var result = _tvShowsService.DeleteTvShow(TvShow);
+
+            return result.Success ? RedirectToAction(nameof(Index)) :
+                View(TvShow);
         }
+
         [AllowAnonymous]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null || id == 0)
                 return NotFound();
 
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                var interaction = _unitOfWork.Interactions.GetAllWithoutPagination().FirstOrDefault(fi => fi.ItemId == id && fi.UserId == userId);
+                var TvShow = await _tvShowsService.TvShowDetails(id, true, userID);
 
-                var tvshow = _unitOfWork.TvShows.GetById(id);
-                if (tvshow == null)
-                    return NotFound();
-
-                var tvshows = _unitOfWork.TvShows.GetTvShows().ToList();
-                tvshows = tvshows.Where(t => t.Producer.Id == tvshow.ProducerId && t.Type == tvshow.Type || t.CategoryId == tvshow.CategoryId && t.Type == tvshow.Type && t.Language == tvshow.Language).Take(10).ToList();
-
-                var parts = _unitOfWork.Parts.GetFilteredPartsWithTvShowId(tvshow.Id).ToList();
-
-                if (interaction is not null)
+                var data = new TvShowDetailsVM()
                 {
-                    var viewModel = new TvShowDetailsVM()
-                    {
-                        TvShow = tvshow,
-                        RelatedTvShows = tvshows,
-                        TvShowParts = parts,
-                        HasUserLiked = interaction.IsLiked,
-                        HasUserDisliked = interaction.IsDisLiked
-                    };
+                    TvShow = TvShow.TvShow,
+                    HasUserDisliked = TvShow.HasUserDisliked,
+                    HasUserLiked = TvShow.HasUserLiked,
+                    RelatedTvShows = TvShow.RelatedTvShows
+                };
 
-                    return View(viewModel);
-                }
-                else
-                {
-                    var viewModel = new TvShowDetailsVM()
-                    {
-                        TvShow = tvshow,
-                        RelatedTvShows = tvshows,
-                        TvShowParts = parts,
-                        HasUserLiked = false,
-                        HasUserDisliked = false
-                    };
-
-                    return View(viewModel);
-                }
+                return View(data);
             }
             else
             {
-                var tvshow = _unitOfWork.TvShows.GetById(id);
-                if (tvshow == null)
-                    return NotFound();
+                var TvShow = await _tvShowsService.TvShowDetails(id, false, null);
 
-                var tvshows = _unitOfWork.TvShows.GetTvShows().ToList();
-                tvshows = tvshows.Where(t => t.Producer.Id == tvshow.ProducerId && t.Type == tvshow.Type || t.CategoryId == tvshow.CategoryId && t.Type == tvshow.Type && t.Language == tvshow.Language).Take(10).ToList();
-
-                var parts = _unitOfWork.Parts.GetFilteredPartsWithTvShowId(tvshow.Id).ToList();
-
-                var viewModel = new TvShowDetailsVM()
+                var data = new TvShowDetailsVM()
                 {
-                    TvShow = tvshow,
-                    RelatedTvShows = tvshows,
-                    TvShowParts = parts,
-                    HasUserLiked = false,
-                    HasUserDisliked = false
+                    TvShow = TvShow.TvShow,
+                    TvShowParts = TvShow.TvShowParts,
+                    HasUserDisliked = TvShow.HasUserDisliked,
+                    HasUserLiked = TvShow.HasUserLiked,
+                    RelatedTvShows = TvShow.RelatedTvShows
                 };
 
-                return View(viewModel);
+                return View(data);
             }
         }
+
         [AllowAnonymous]
-        public IActionResult TvShowsList(int page = 1, bool isArabic = false, bool isRamadan = false)
+        public async Task<IActionResult> TvShowsList(int page = 1, bool isArabic = false, bool isRamadan = false)
         {
             int pageSize = 9;
             bool flag = false;
-            List<TvShow> tvshows = new List<TvShow>();
+            List<TvShow> TvShows = new List<TvShow>();
 
             if (isArabic && !isRamadan)
             {
-                tvshows = _unitOfWork.TvShows.ArabicTvShows().ToList();
+                TvShows = _tvShowsService.GetTvShows(null, Languages.عربي, ItemType.مسلسل, false).ToList();
                 flag = true;
             }
             else if (isRamadan && !isArabic)
             {
-                tvshows = _unitOfWork.TvShows.RamadanTvShows().ToList();
+                TvShows = _tvShowsService.GetTvShows(null, Languages.عربي, ItemType.مسلسل, true).ToList();
                 flag = true;
             }
             else
             {
-                tvshows = _unitOfWork.TvShows.GetTvShows().ToList();
+                TvShows = _tvShowsService.GetTvShows(null, null, ItemType.مسلسل, false).ToList();
             }
 
-            int totalItems = tvshows.Count;
+            int totalItems = TvShows.Count;
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-            var pagedItems = tvshows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var pagedItems = TvShows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             var viewModel = new TvShowVM
             {
@@ -285,46 +256,48 @@ namespace PresentationLayer.Controllers
             };
 
             var enumValues = Enum.GetValues(typeof(Languages))
-                        .Cast<Languages>()
-                        .Select(e => new { Id = (int)e, Name = e.ToString() })
-                        .ToList();
+                .Cast<Languages>().Select(e => new { Id = (int)e, Name = e.ToString() }).ToList();
+
             SelectList enumSelectList = new SelectList(enumValues, "Id", "Name");
             ViewBag.MyBag5 = enumSelectList;
 
-            CreateCountriesSelectList();
-            CreateCategoriesSelectList();
+            await this.CreateNeededSelectLists();
 
-            List<int> dates = new List<int>();
+            List<int> datesList = new List<int>();
+
             for (int i = 1950; i <= DateTime.Now.Year; i++)
             {
-                dates.Add(i);
+                datesList.Add(i);
             }
-            var Dates = dates.OrderByDescending(x => x)
+
+            var dates = datesList.OrderByDescending(x => x)
                 .Select(n => new { Value = n, Text = n.ToString() }).ToList();
-            ViewBag.MyBag6 = Dates;
+
+            ViewBag.MyBag6 = dates;
 
             return View(viewModel);
         }
+
         [AllowAnonymous]
-        public IActionResult LoadMoreTvShows(int page, string genre, string country, int? language, int? year, bool fromHome = false, bool isArabic = false, bool isCartoon = false)
+        public IActionResult LoadMoreTvShows(int page, string genre, string country, int? language, int? year, bool fromHome = false, bool isArabic = false, bool isRamadan = false)
         {
             int pageSize = 9;
             bool flag = false;
             List<TvShow> combinedItems = new List<TvShow>();
 
-            if (isArabic && !isCartoon)
+            if (isArabic && !isRamadan)
             {
-                combinedItems = _unitOfWork.TvShows.GetFilteredTvShows(genre, country, language, year, true, false).ToList();
+                combinedItems = _tvShowsService.GetFilteredTvShows(genre, country, language, year, true, false).ToList();
                 flag = true;
             }
-            else if (isCartoon && !isArabic)
+            else if (isRamadan && !isArabic)
             {
-                combinedItems = _unitOfWork.TvShows.GetFilteredTvShows(genre, country, language, year, false, true).ToList();
+                combinedItems = _tvShowsService.GetFilteredTvShows(genre, country, language, year, false, true).ToList();
                 flag = true;
             }
             else
             {
-                combinedItems = _unitOfWork.TvShows.GetFilteredTvShows(genre, country, language, year).ToList();
+                combinedItems = _tvShowsService.GetFilteredTvShows(genre, country, language, year).ToList();
             }
 
             var pagedItems = combinedItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
@@ -334,132 +307,43 @@ namespace PresentationLayer.Controllers
                 TvShows = pagedItems,
                 FromHome = flag,
                 Arabic = isArabic,
-                Ramadan = isCartoon
+                Ramadan = isRamadan
             };
 
             return PartialView("_TvShowsItems", viewModel);
         }
-        [AllowAnonymous]
-        public IActionResult LikeTvShow(int tvshowId)
-        {
-            TvShow tvshow = new TvShow();
 
+        [AllowAnonymous]
+        public async Task<IActionResult> LikeTvShow(int TvShowId)
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var interaction = _unitOfWork.Interactions.GetAllWithoutPagination()
-                .FirstOrDefault(fi => fi.ItemId == tvshowId && fi.UserId == userId);
-
-            if (interaction == null)
-            {
-                interaction = new Interaction
-                {
-                    UserId = userId,
-                    ItemId = tvshowId,
-                    IsLiked = true,
-                    IsDisLiked = false
-                };
-                _unitOfWork.Interactions.Add(interaction);
-
-                tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-                tvshow.NoOfLikes += 1;
-            }
-            else if (interaction.IsDisLiked)
-            {
-                interaction.IsLiked = true;
-                interaction.IsDisLiked = false;
-
-                tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-                tvshow.NoOfLikes += 1;
-                tvshow.NoOfDisLikes -= 1;
-            }
-            else if (interaction.IsLiked)
-            {
-                interaction.IsLiked = false;
-
-                tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-                tvshow.NoOfLikes -= 1;
-
-                _unitOfWork.Interactions.Delete(interaction);
-            }
-            _unitOfWork.SaveChanges();
-
-            tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-
-            var tvshows = _unitOfWork.TvShows.GetTvShows().ToList();
-            tvshows = tvshows.Where(t => t.Producer.Id == tvshow.ProducerId && t.Type == tvshow.Type || t.CategoryId == tvshow.CategoryId && t.Type == tvshow.Type && t.Language == tvshow.Language).Take(10).ToList();
-
-            var parts = _unitOfWork.Parts.GetFilteredPartsWithTvShowId(tvshow.Id).ToList();
+            var result = await _tvShowsService.LikeTvShow(TvShowId, userId);
 
             var viewModel = new TvShowDetailsVM()
             {
-                TvShow = tvshow,
-                RelatedTvShows = tvshows,
-                TvShowParts = parts,
-                HasUserLiked = interaction.IsLiked,
-                HasUserDisliked = interaction.IsDisLiked
+                TvShow = result.TvShow,
+                RelatedTvShows = result.RelatedTvShows,
+                HasUserLiked = result.HasUserLiked,
+                HasUserDisliked = result.HasUserDisliked
             };
 
-            return View("Details",viewModel);
+            return View("Details", viewModel);
         }
-        [AllowAnonymous]
-        public IActionResult DisLikeTvShow(int tvshowId)
-        {
-            TvShow tvshow = new TvShow();
 
+        [AllowAnonymous]
+        public async Task<IActionResult> DislikeTvShow(int TvShowId)
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var interaction = _unitOfWork.Interactions.GetAllWithoutPagination()
-                .FirstOrDefault(fi => fi.ItemId == tvshowId && fi.UserId == userId);
-
-            if (interaction == null)
-            {
-                interaction = new Interaction
-                {
-                    UserId = userId,
-                    ItemId = tvshowId,
-                    IsLiked = false,
-                    IsDisLiked = true
-                };
-                _unitOfWork.Interactions.Add(interaction);
-
-                tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-                tvshow.NoOfDisLikes += 1;
-            }
-            else if (interaction.IsLiked)
-            {
-                interaction.IsLiked = false;
-                interaction.IsDisLiked = true;
-
-                tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-                tvshow.NoOfDisLikes += 1;
-                tvshow.NoOfLikes -= 1;
-            }
-            else if (interaction.IsDisLiked)
-            {
-                interaction.IsDisLiked = false;
-
-                tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-                tvshow.NoOfDisLikes -= 1;
-
-                _unitOfWork.Interactions.Delete(interaction);
-            }
-
-            _unitOfWork.SaveChanges();
-
-            tvshow = _unitOfWork.TvShows.GetById(tvshowId);
-
-            var tvshows = _unitOfWork.TvShows.GetTvShows().ToList();
-            tvshows = tvshows.Where(t => t.Producer.Id == tvshow.ProducerId && t.Type == tvshow.Type || t.CategoryId == tvshow.CategoryId && t.Type == tvshow.Type && t.Language == tvshow.Language).Take(10).ToList();
-
-            var parts = _unitOfWork.Parts.GetFilteredPartsWithTvShowId(tvshow.Id).ToList();
+            var result = await _tvShowsService.DisLikeTvShow(TvShowId, userId);
 
             var viewModel = new TvShowDetailsVM()
             {
-                TvShow = tvshow,
-                RelatedTvShows = tvshows,
-                TvShowParts = parts,
-                HasUserLiked = interaction.IsLiked,
-                HasUserDisliked = interaction.IsDisLiked
+                TvShow = result.TvShow,
+                RelatedTvShows = result.RelatedTvShows,
+                HasUserLiked = result.HasUserLiked,
+                HasUserDisliked = result.HasUserDisliked
             };
 
             return View("Details", viewModel);

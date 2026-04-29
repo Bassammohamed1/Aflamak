@@ -1,9 +1,9 @@
-﻿using DataAccessLayer.Models;
-using DataAccessLayer.Models.ViewModels;
-using DataAccessLayer.Repository.Interfaces;
+﻿using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PresentationLayer.ViewModels;
 using System.Security.Claims;
 
 namespace PresentationLayer.Controllers
@@ -11,292 +11,191 @@ namespace PresentationLayer.Controllers
     [Authorize(Roles = "Admin")]
     public class EpisodesController : Controller
     {
-        private IUnitOfWork _unitOfWork;
-        public EpisodesController(IUnitOfWork unitOfWork)
+        private void CreatePartsSelectList()
         {
-            _unitOfWork = unitOfWork;
-        }
-        public void CreatePartsSelectList()
-        {
-            var parts = _unitOfWork.Parts.GetAllPartsForSelectList();
+            var parts = _episodesService.GetAllPartsForSelectList();
+
             SelectList List = new SelectList(parts, "Id", "Name");
+
             ViewBag.MyBag1 = List;
         }
-        public IActionResult Index(int? page)
+
+        private readonly IEpisodesService _episodesService;
+
+        public EpisodesController(IEpisodesService episodesService)
+        {
+            _episodesService = episodesService;
+        }
+
+        public async Task<IActionResult> Index(int? page)
         {
             int pageSize = 10;
             int pageNumber = page ?? 1;
-            IEnumerable<Episode> result = _unitOfWork.Episodes.GetAllEpisodes(pageNumber, pageSize);
+
+            IEnumerable<Episode> result = await _episodesService.GetAllEpisodes(pageNumber, pageSize);
+
             return View(result);
         }
+
         public IActionResult Add()
         {
-            CreatePartsSelectList();
             return View();
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Add(Episode data)
+        public async Task<IActionResult> Add(Episode data)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Episodes.Add(data);
-                _unitOfWork.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                var result = await _episodesService.AddEpisode(data);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(data);
             }
             else
             {
                 return View(data);
             }
         }
-        public IActionResult Update(int Id)
+
+        public async Task<IActionResult> Update(int Id)
         {
             if (Id == null || Id == 0)
                 return NotFound();
-            var data = _unitOfWork.Episodes.GetById(Id);
+
+            var data = await _episodesService.GetEpisodeByID(Id);
+
             if (data == null)
                 return NotFound();
-            CreatePartsSelectList();
+
             return View(data);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(Episode data)
+        public async Task<IActionResult> Update(Episode data)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Episodes.Update(data);
-                _unitOfWork.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                var result = await _episodesService.UpdateEpisode(data);
+
+                return result.Success ? RedirectToAction(nameof(Index)) :
+                    View(data);
             }
             else
             {
                 return View(data);
             }
         }
-        public IActionResult Delete(int Id)
+
+        public async Task<IActionResult> Delete(int Id)
         {
             if (Id == null || Id == 0)
                 return NotFound();
-            var data = _unitOfWork.Episodes.GetById(Id);
+
+            var data = await _episodesService.GetEpisodeByID(Id);
+
             if (data == null)
                 return NotFound();
+
             return View(data);
         }
+
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Delete(Episode data)
+        public async Task<IActionResult> Delete(Episode data)
         {
-            _unitOfWork.Episodes.Delete(data);
-            _unitOfWork.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            var result = await _episodesService.DeleteEpisode(data);
+
+            return result.Success ? RedirectToAction(nameof(Index)) :
+                View(data);
         }
+
         [AllowAnonymous]
         public IActionResult Recent(int page = 1)
         {
-            var data = _unitOfWork.Episodes.GetRecentEpisodes().ToList();
-            int pageSize = 9;
-
-            int totalItems = data.Count;
-            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-            var pagedItems = data.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var data = _episodesService.GetRecentEpisodes(page);
 
             var viewModel = new EpisodeVM
             {
-                Episodes = pagedItems,
-                CurrentPage = page,
-                TotalPages = totalPages,
+                Episodes = data.Episodes,
+                CurrentPage = data.CurrentPage,
+                TotalPages = data.TotalPages
             };
 
             return View(viewModel);
         }
+
         [AllowAnonymous]
         public IActionResult LoadMoreEpisodes(int page)
         {
-            var data = _unitOfWork.Episodes.GetRecentEpisodes().ToList();
-            int pageSize = 9;
-
-            var pagedItems = data.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var data = _episodesService.LoadMoreEpisodes(page);
 
             var viewModel = new EpisodeVM
             {
-                Episodes = pagedItems,
+                Episodes = data.Episodes
             };
 
             return PartialView("_Recent", viewModel);
         }
+
         [AllowAnonymous]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null || id == 0)
                 return NotFound();
 
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                var interaction = _unitOfWork.Interactions.GetAllWithoutPagination().FirstOrDefault(fi => fi.ItemId == id && fi.UserId == userId);
+                var result = await _episodesService.EpisodeDetails(id, true, userID);
 
-                var episode = _unitOfWork.Episodes.GetById(id);
-                if (episode == null)
-                    return NotFound();
-
-                var episodes = _unitOfWork.Episodes.GetFilteredEpisodesWithPartId(episode.PartId).ToList();
-
-                if (interaction is not null)
-                {
-                    var viewModel = new EpisodeDetailsVM()
-                    {
-                        Episode = episode,
-                        Episodes = episodes,
-                        HasUserLiked = interaction.IsLiked,
-                        HasUserDisliked = interaction.IsDisLiked
-                    };
-
-                    return View(viewModel);
-                }
-                else
-                {
-                    var viewModel = new EpisodeDetailsVM()
-                    {
-                        Episode = episode,
-                        Episodes = episodes,
-                        HasUserLiked = false,
-                        HasUserDisliked = false
-                    };
-
-                    return View(viewModel);
-                }
+                return result is not null ? View(result) : NotFound();
             }
             else
             {
-                var episode = _unitOfWork.Episodes.GetById(id);
-                if (episode == null)
-                    return NotFound();
+                var result = await _episodesService.EpisodeDetails(id, false, null);
 
-                var episodes = _unitOfWork.Episodes.GetFilteredEpisodesWithPartId(episode.PartId).ToList();
-
-                var viewModel = new EpisodeDetailsVM()
-                {
-                    Episode = episode,
-                    Episodes = episodes,
-                    HasUserLiked = false,
-                    HasUserDisliked = false
-                };
-
-                return View(viewModel);
+                return result is not null ? View(result) : NotFound();
             }
         }
+
         [AllowAnonymous]
-        public IActionResult LikeEpisode(int episodeId)
+        public async Task<IActionResult> LikeEpisode(int episodeId)
         {
-            Episode episode = new Episode();
+            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var interaction = _unitOfWork.Interactions.GetAllWithoutPagination()
-                .FirstOrDefault(fi => fi.ItemId == episodeId && fi.UserId == userId);
-
-            if (interaction == null)
-            {
-                interaction = new Interaction
-                {
-                    UserId = userId,
-                    ItemId = episodeId,
-                    IsLiked = true,
-                    IsDisLiked = false
-                };
-                _unitOfWork.Interactions.Add(interaction);
-
-                episode = _unitOfWork.Episodes.GetById(episodeId);
-                episode.NoOfLikes += 1;
-            }
-            else if (interaction.IsDisLiked)
-            {
-                interaction.IsLiked = true;
-                interaction.IsDisLiked = false;
-
-                episode = _unitOfWork.Episodes.GetById(episodeId);
-                episode.NoOfLikes += 1;
-                episode.NoOfDisLikes -= 1;
-            }
-            else if (interaction.IsLiked)
-            {
-                interaction.IsLiked = false;
-
-                episode = _unitOfWork.Episodes.GetById(episodeId);
-                episode.NoOfLikes -= 1;
-
-                _unitOfWork.Interactions.Delete(interaction);
-            }
-            _unitOfWork.SaveChanges();
-
-            var episodes = _unitOfWork.Episodes.GetFilteredEpisodesWithPartId(episode.PartId).ToList();
+            var data = await _episodesService.LikeEpisode(episodeId, userID);
 
             var viewModel = new EpisodeDetailsVM()
             {
-                Episode = episode,
-                Episodes = episodes,
-                HasUserLiked = interaction.IsLiked,
-                HasUserDisliked = interaction.IsDisLiked
+                Episode = data.Episode,
+                Episodes = data.Episodes,
+                HasUserLiked = data.HasUserLiked,
+                HasUserDisliked = data.HasUserDisliked
             };
+
 
             return View("Details", viewModel);
         }
+
         [AllowAnonymous]
-        public IActionResult DisLikeEpisode(int episodeId)
+        public async Task<IActionResult> DisLikeEpisode(int episodeId)
         {
-            Episode episode = new Episode();
+            var userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var interaction = _unitOfWork.Interactions.GetAllWithoutPagination()
-                .FirstOrDefault(fi => fi.ItemId == episodeId && fi.UserId == userId);
-
-            if (interaction == null)
-            {
-                interaction = new Interaction
-                {
-                    UserId = userId,
-                    ItemId = episodeId,
-                    IsLiked = false,
-                    IsDisLiked = true
-                };
-                _unitOfWork.Interactions.Add(interaction);
-
-                episode = _unitOfWork.Episodes.GetById(episodeId);
-                episode.NoOfDisLikes += 1;
-            }
-            else if (interaction.IsLiked)
-            {
-                interaction.IsLiked = false;
-                interaction.IsDisLiked = true;
-
-                episode = _unitOfWork.Episodes.GetById(episodeId);
-                episode.NoOfDisLikes += 1;
-                episode.NoOfLikes -= 1;
-            }
-            else if (interaction.IsDisLiked)
-            {
-                interaction.IsDisLiked = false;
-
-                episode = _unitOfWork.Episodes.GetById(episodeId);
-                episode.NoOfDisLikes -= 1;
-
-                _unitOfWork.Interactions.Delete(interaction);
-            }
-
-            _unitOfWork.SaveChanges();
-
-            var episodes = _unitOfWork.Episodes.GetFilteredEpisodesWithPartId(episode.PartId).ToList();
+            var data = await _episodesService.DisLikeEpisode(episodeId, userID);
 
             var viewModel = new EpisodeDetailsVM()
             {
-                Episode = episode,
-                Episodes = episodes,
-                HasUserLiked = interaction.IsLiked,
-                HasUserDisliked = interaction.IsDisLiked
+                Episode = data.Episode,
+                Episodes = data.Episodes,
+                HasUserLiked = data.HasUserLiked,
+                HasUserDisliked = data.HasUserDisliked
             };
+
 
             return View("Details", viewModel);
         }

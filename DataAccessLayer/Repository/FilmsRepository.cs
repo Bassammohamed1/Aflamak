@@ -1,6 +1,6 @@
 ﻿using DataAccessLayer.Data;
+using DataAccessLayer.Enums;
 using DataAccessLayer.Models;
-using DataAccessLayer.Models.ViewModels;
 using DataAccessLayer.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
@@ -10,189 +10,82 @@ namespace DataAccessLayer.Repository
     public class FilmsRepository : Repository<Film>, IFilmsRepository
     {
         private readonly AppDbContext _context;
+
         public FilmsRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
+
+        public async Task<Film> GetFilmById(int id)
+        {
+            return await _context.Films.AsNoTracking().Include(x => x.Producer).Include(x => x.Category).Include(x => x.Country)
+                .Include(y => y.ActorFilms).ThenInclude(z => z.Actor)
+                .FirstOrDefaultAsync(s => s.Id == id);
+        }
+
         public IEnumerable<Film> GetFilms()
         {
-            var result = _context.Films.OrderBy(f => f.Name).Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms).ThenInclude(m => m.Actor);
-
-            return result.Any() ? result : Enumerable.Empty<Film>();
-        } 
-        public IQueryable<Film> GetFilteredFilmsWithId(int id, string Key)
-        {
-            if (Key == "ID")
-                return _context.Films.Where(f => f.Id == id).OrderBy(f => f.Name).Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms).ThenInclude(m => m.Actor);
-
-            else if (Key == "Producer")
-                return _context.Films.Where(f => f.ProducerId == id).OrderBy(f => f.Name).Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms).ThenInclude(m => m.Actor);
-
-            else
-                return Enumerable.Empty<Film>().AsQueryable();
-        } 
-        public IQueryable<Film> GetFilteredFilms(string genre, string country, int? language, int? year, bool isArabic = false, bool isCartoon = false)
-        {
-            if (isArabic && !isCartoon)
-            {
-                var query = ArabicFilms().AsQueryable();
-
-                if (!string.IsNullOrEmpty(genre))
-                {
-                    int genreId = int.Parse(genre);
-                    query = query.Where(f => f.CategoryId == genreId);
-                }
-
-                if (!string.IsNullOrEmpty(country))
-                {
-                    int countryId = int.Parse(country);
-                    query = query.Where(f => f.CountryId == countryId);
-                }
-
-                if (language.HasValue && language.Value != 0)
-                {
-                    query = query.Where(f => f.Language == language);
-                }
-
-                if (year.HasValue)
-                {
-                    query = query.Where(f => f.Year == year);
-                }
-
-                var films = query;
-
-                return films;
-            }
-            else if (isCartoon && !isArabic)
-            {
-                var query = CartoonFilms().AsQueryable();
-
-                if (!string.IsNullOrEmpty(genre))
-                {
-                    int genreId = int.Parse(genre);
-                    query = query.Where(f => f.CategoryId == genreId);
-                }
-
-                if (!string.IsNullOrEmpty(country))
-                {
-                    int countryId = int.Parse(country);
-                    query = query.Where(f => f.CountryId == countryId);
-                }
-
-                if (language.HasValue && language.Value != 0)
-                {
-                    query = query.Where(f => f.Language == language);
-                }
-
-                if (year.HasValue)
-                {
-                    query = query.Where(f => f.Year == year);
-                }
-
-                var films = query;
-
-                return films;
-            }
-            else
-            {
-                var query = GetFilms().AsQueryable();
-
-                if (!string.IsNullOrEmpty(genre))
-                {
-                    int genreId = int.Parse(genre);
-                    query = query.Where(f => f.CategoryId == genreId);
-                }
-
-                if (!string.IsNullOrEmpty(country))
-                {
-                    int countryId = int.Parse(country);
-                    query = query.Where(f => f.CountryId == countryId);
-                }
-
-                if (language.HasValue && language.Value != 0)
-                {
-                    query = query.Where(f => f.Language == language);
-                }
-
-                if (year.HasValue)
-                {
-                    query = query.Where(f => f.Year == year);
-                }
-
-                var films = query;
-
-                return films;
-            }
+            return _context.Films.AsNoTracking().OrderBy(f => f.Name)
+                .Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms)
+                .ThenInclude(m => m.Actor);
         }
-        public IEnumerable<Film> GetAllFilms(int pageNumber, int pageSize)
-        {
-            var result = _context.Films.OrderBy(f => f.Name).Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms).ThenInclude(m => m.Actor).ToPagedList(pageNumber, pageSize);
 
-            return result.Any() ? result : Enumerable.Empty<Film>();
+        public async Task<IEnumerable<Film>> GetAllFilms(int pageNumber, int pageSize)
+        {
+            return await _context.Films.AsNoTracking().OrderBy(f => f.Name)
+                .Include(m => m.Producer).Include(m => m.Category)
+                .Include(m => m.Country).Include(x => x.ActorFilms)
+                .ThenInclude(m => m.Actor).ToPagedListAsync(pageNumber, pageSize);
         }
-        public IEnumerable<Film> GetAllFilmsOrderedByDate(int pageNumber, int pageSize)
-        {
-            var result = _context.Films.OrderByDescending(f => f.Year).Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms).ThenInclude(m => m.Actor).ToPagedList(pageNumber, pageSize);
 
-            return result.Any() ? result : Enumerable.Empty<Film>();
-        } 
-        public IEnumerable<Film> GetAllFilmsOrderedByLikes(int pageNumber, int pageSize)
+        public async Task<IEnumerable<Film>> GetAllFilmsOrderedByKey(int pageNumber, int pageSize, Keys key)
         {
-            var result = _context.Films.OrderByDescending(f => f.NoOfLikes).Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms).ThenInclude(m => m.Actor).ToPagedList(pageNumber, pageSize);
-
-            return result.Any() ? result : Enumerable.Empty<Film>();
-        }  
-        public Film GetFilmById(int id)
-        {
-            var result = _context.Films.Include(x => x.Producer).Include(x => x.Category).Include(x => x.Country).Include(y => y.ActorFilms).ThenInclude(z => z.Actor).FirstOrDefault(s => s.Id == id);
-
-            return result is not null ? result : null;
+            return await _context.Films.AsNoTracking().OrderByDescending(f => EF.Property<object>(f, key.ToString()))
+                .Include(m => m.Producer).Include(m => m.Category)
+                .Include(m => m.Country).Include(x => x.ActorFilms)
+                .ThenInclude(m => m.Actor).ToPagedListAsync(pageNumber, pageSize);
         }
-        public void AddFilm(FilmViewModel data)
+
+        public IQueryable<Film> GetFilteredFilmsWithID(int id)
         {
-            int languageId = (int)data.Language;
-            int typeId = (int)data.Type;
+            return _context.Films.AsNoTracking().Where(f => f.Id == id)
+                .OrderBy(f => f.Name).Include(m => m.Producer)
+                .Include(m => m.Category).Include(m => m.Country).Include(x => x.ActorFilms)
+                .ThenInclude(m => m.Actor);
+        }
 
-            var film = new Film()
-            {
-                Id = data.Id,
-                Name = data.Name,
-                Description = data.Description,
-                dbImage = data.dbImage,
-                IsSeries = data.IsSeries,
-                PartsNo = data.PartsNo,
-                Root = data.Root,
-                NoOfLikes = data.NoOfLikes,
-                NoOfDisLikes = data.NoOfDisLikes,
-                Year = data.Year,
-                Month = data.Month,
-                Type = typeId,
-                Language = languageId,
-                CountryId = data.CountryId,
-                CategoryId = data.CategoryId,
-                ProducerId = data.ProducerId,
-            };
-            _context.Films.Add(film);
-            _context.SaveChanges();
+        public IQueryable<Film> GetFilteredFilmsWithProducerID(int id)
+        {
+            return _context.Films.AsNoTracking().Where(f => f.ProducerId == id)
+                .OrderBy(f => f.Name)
+                .Include(m => m.Producer).Include(m => m.Category).Include(m => m.Country)
+                .Include(x => x.ActorFilms).ThenInclude(m => m.Actor);
+        }
 
-            foreach (var i in data.ActorsId)
+        public async Task<Film?> AddFilm(Film data, List<int> actorsIDs)
+        {
+            await _context.Films.AddAsync(data);
+            await _context.SaveChangesAsync();
+
+            foreach (var i in actorsIDs)
             {
                 var result = new ActorFilms()
                 {
-                    FilmId = film.Id,
+                    FilmId = data.Id,
                     ActorId = i
                 };
-                _context.ActorFilms.Add(result);
+                await _context.ActorFilms.AddAsync(result);
             }
 
-            _context.SaveChanges();
-        } 
-        public void UpdateFilm(FilmViewModel data)
-        {
-            int languageId = (int)data.Language;
-            int typeId = (int)data.Type;
+            await _context.SaveChangesAsync();
 
-            var movie = _context.Films.Find(data.Id);
+            return data;
+        }
+
+        public async Task<Film?> UpdateFilm(Film data, List<int> actorsIDs)
+        {
+            var movie = await _context.Films.FindAsync(data.Id);
+
             movie.Name = data.Name;
             movie.Description = data.Description;
             movie.dbImage = data.dbImage;
@@ -203,90 +96,31 @@ namespace DataAccessLayer.Repository
             movie.NoOfDisLikes = data.NoOfDisLikes;
             movie.Year = data.Year;
             movie.Month = data.Month;
-            movie.Type = typeId;
-            movie.Language = languageId;
+            movie.Type = data.Type;
+            movie.Language = data.Language;
             movie.CountryId = data.CountryId;
             movie.ProducerId = data.ProducerId;
             movie.CategoryId = data.CategoryId;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            var existingActorFilms = _context.ActorFilms.Where(af => af.FilmId == movie.Id).ToList();
+            var existingActorFilms = await _context.ActorFilms.Where(af => af.FilmId == movie.Id).ToListAsync();
+
             _context.ActorFilms.RemoveRange(existingActorFilms);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            foreach (var i in data.ActorsId)
+            foreach (var i in actorsIDs)
             {
                 var result = new ActorFilms()
                 {
                     FilmId = movie.Id,
                     ActorId = i
                 };
-                _context.ActorFilms.Add(result);
+                await _context.ActorFilms.AddAsync(result);
             }
 
-            _context.SaveChanges();
-        } 
-        public IQueryable<Film> MostWatchedFilms()
-        {
-            var result = _context.Films.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 1).AsNoTracking();
-
-            return result.Any() ? result : Enumerable.Empty<Film>().AsQueryable();
-        } 
-        public IQueryable<Film> RecentFilms()
-        {
-            var result = _context.Films.OrderByDescending(x => x.Year).ThenByDescending(x => x.Month).Where(m => m.Type == 1).AsNoTracking();
-
-            return result.Any() ? result : Enumerable.Empty<Film>().AsQueryable();
-        } 
-        public IQueryable<Film> ArabicFilms() 
-        {
-            var result = _context.Films.Where(m => m.Type == 1 && m.Language == 1).AsNoTracking();
-
-            return result.Any() ? result : Enumerable.Empty<Film>().AsQueryable();
-        }
-        public IQueryable<Film> CartoonFilms()
-        {
-            var result = _context.Films.OrderByDescending(x => x.NoOfLikes).Where(m => m.Type == 3).AsNoTracking();
-
-            return result.Any() ? result : Enumerable.Empty<Film>().AsQueryable();
-        } 
-        public IQueryable<Film> GetRecentFilms(int page)
-        {
-            List<Film> data = new List<Film>();
-
-            var result1 = _context.Films.OrderBy(f => f.Name).Where(f => f.Month < 8 && f.Year == DateTime.Now.Year).ToList();
-            if (result1 is not null)
-                data.AddRange(result1);
-
-            var result2 = _context.Films.OrderBy(f => f.Name).Where(f => f.Month >= 8 && (f.Year == DateTime.Now.Year || f.Year == DateTime.Now.Year - 1)).ToList();
-            if (result2 is not null)
-                data.AddRange(result2);
-
-            if (data.Any())
-                return data.AsQueryable();
-
-            return Enumerable.Empty<Film>().AsQueryable();
-        } 
-        public IQueryable<Film> GetTopRatedFilms(int page)
-        {
-            List<Film> data = new List<Film>();
-
-            var result = _context.Films.OrderBy(f => f.Name).Where(f => f.NoOfLikes > 5000).ToList();
-            if (result.Any())
-            {
-                data.AddRange(result);
-
-                return data.AsQueryable();
-            }
-
-            return Enumerable.Empty<Film>().AsQueryable();
-        }  
-        public IQueryable<Film> GetFilmsForSearch(string key)
-        {
-            var result = _context.Films.Where(a => a.Name.Contains(key));
-
-            return result.Any() ? result : Enumerable.Empty<Film>().AsQueryable();
+            await _context.SaveChangesAsync();
+            return data;
         }
     }
 }
